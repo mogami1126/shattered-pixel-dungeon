@@ -60,6 +60,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuild
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LoopBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.connection.TunnelRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PitRoom;
@@ -252,7 +253,9 @@ public abstract class RegularLevel extends Level {
 		PathFinder.buildDistanceMap(entrance(), entranceWalkable, 8);
 
 		Mob mob = null;
-		while (mobsToSpawn > 0) {
+		if (Dungeon.isChallenged(Challenges.INFINITY_MOBS)) {
+			createOmnipresentMobs(mobsToSpawn, entranceFOV);
+		} else while (mobsToSpawn > 0) {
 			if (mob == null) mob = createMob();
 			Room roomToSpawn;
 			
@@ -313,6 +316,58 @@ public abstract class RegularLevel extends Level {
 
 		}
 
+	}
+
+	// Initial placement only. The ordinary respawner and all enemy statistics are unchanged.
+	protected void createOmnipresentMobs(int baseCount, boolean[] entranceFOV) {
+		boolean[] occupied = new boolean[length()];
+		for (Mob existing : mobs) occupied[existing.pos] = true;
+		boolean[] eligible = new boolean[length()];
+		for (Room room : rooms) {
+			if (room == roomEntrance || !(room instanceof StandardRoom || room instanceof TunnelRoom)) continue;
+			for (Point p : room.charPlaceablePoints(this)) {
+				int cell = pointToCell(p);
+				if (passable[cell] && !solid[cell] && map[cell] != Terrain.EMPTY_SP
+						&& map[cell] != Terrain.ENTRANCE && map[cell] != Terrain.EXIT
+						&& cell != entrance() && cell != exit() && !occupied[cell]
+						&& !entranceFOV[cell] && PathFinder.distance[cell] == Integer.MAX_VALUE
+						&& traps.get(cell) == null && plants.get(cell) == null) {
+					eligible[cell] = true;
+				}
+			}
+		}
+
+		ArrayList<Integer> cells = new ArrayList<>();
+		ArrayList<Integer> largeCells = new ArrayList<>();
+		for (int cell = 0; cell < length(); cell++) {
+			if (eligible[cell]) {
+				cells.add(cell);
+				if (openSpace[cell]) largeCells.add(cell);
+			}
+		}
+		Random.shuffle(cells);
+		Random.shuffle(largeCells);
+
+		int attempts = baseCount * 100;
+		int targetCount = Math.min(attempts, cells.size());
+		int cellIndex = 0, largeIndex = 0, placed = 0;
+		for (int attempt = 0; attempt < attempts && placed < targetCount; attempt++) {
+			Mob next = createMob();
+			int cell;
+			if (next.properties().contains(Char.Property.LARGE)) {
+				while (largeIndex < largeCells.size() && occupied[largeCells.get(largeIndex)]) largeIndex++;
+				if (largeIndex == largeCells.size()) continue;
+				cell = largeCells.get(largeIndex++);
+			} else {
+				while (cellIndex < cells.size() && occupied[cells.get(cellIndex)]) cellIndex++;
+				if (cellIndex == cells.size()) break;
+				cell = cells.get(cellIndex++);
+			}
+			next.pos = cell;
+			mobs.add(next);
+			occupied[cell] = true;
+			placed++;
+		}
 	}
 
 	@Override
