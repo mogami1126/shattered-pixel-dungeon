@@ -241,8 +241,17 @@ public final class MmoRules {
         }
         if (leveled && h.sprite!=null) h.sprite.showStatus(com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite.POSITIVE, "Lv "+heroLevel(h));
     }
+    private static void revealUpgradeAndCurse(Item item) {
+        if (item.isUpgradable()) {
+            // TooCruel reveals these two facts without learning ring types or wand charges.
+            item.levelKnown=true;
+            item.cursedKnown=true;
+        }
+    }
     public static boolean absorb(Item item,Hero h) {
-        if (!on(Challenges.ABSORPTION) || !mergeable(item) || item.isEquipped(h)) return false;
+        if (!on(Challenges.ABSORPTION)) return false;
+        revealUpgradeAndCurse(item);
+        if (!mergeable(item) || item.isEquipped(h)) return false;
         Item target=null;
         for (Item candidate:h.belongings) {
             if(candidate==item || candidate.getClass()!=item.getClass() || !mergeable(candidate)) continue;
@@ -256,6 +265,7 @@ public final class MmoRules {
         target.level(nativeLevel);target.mmoExtra=total.subtract(BigInteger.valueOf(nativeLevel));
         if(target instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)
             ((com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)target).updateWand(false);
+        revealUpgradeAndCurse(target);
         Item.updateQuickslot();return true;
     }
     private static boolean mergeable(Item item) {
@@ -263,7 +273,7 @@ public final class MmoRules {
                 item instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon);
     }
     private static void copyMergeState(Item source,Item target) {
-        target.cursed=source.cursed;target.cursedKnown=source.cursedKnown;target.levelKnown=source.levelKnown;
+        target.cursed=source.cursed;
         if(source instanceof Weapon) {
             Weapon a=(Weapon)source,b=(Weapon)target;
             b.enchantment=a.enchantment;b.curseInfusionBonus=a.curseInfusionBonus;b.masteryPotionBonus=a.masteryPotionBonus;
@@ -278,7 +288,10 @@ public final class MmoRules {
     public static void consolidateEquipment() {
         if (!on(Challenges.ABSORPTION) || Dungeon.hero==null || Dungeon.hero.belongings.lostInventory()) return;
         java.util.ArrayList<Item> inventory=new java.util.ArrayList<>();
-        for(Item item:Dungeon.hero.belongings) if(!item.isEquipped(Dungeon.hero) && mergeable(item)) inventory.add(item);
+        for(Item item:Dungeon.hero.belongings) {
+            revealUpgradeAndCurse(item);
+            if(!item.isEquipped(Dungeon.hero) && mergeable(item)) inventory.add(item);
+        }
         inventory.sort((a,b)->a.mmoLevel().compareTo(b.mmoLevel()));
         for(Item item:inventory) if(Dungeon.hero.belongings.backpack.contains(item) && absorb(item,Dungeon.hero))
             item.detachAll(Dungeon.hero.belongings.backpack);

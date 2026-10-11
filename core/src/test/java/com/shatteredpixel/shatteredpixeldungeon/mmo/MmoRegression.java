@@ -263,6 +263,22 @@ public class MmoRegression {
         Dungeon.depth=5;Rat fixedArmor=new Rat();
         check(MmoRules.physical(new Target(),fixedArmor,10,2)==1,"monster armor stays native while its health scales");
         Dungeon.depth=1;
+        lower.levelKnown=false;lower.cursedKnown=false;
+        Sword hiddenHigher=new Sword();hiddenHigher.level(30);hiddenHigher.cursed=true;
+        check(MmoRules.absorb(hiddenHigher,Dungeon.hero) && lower.levelKnown && lower.cursedKnown && lower.cursed,"merge reveals facts without removing the winning curse");
+        RingOfHaste hiddenRing=new RingOfHaste();
+        check(!hiddenRing.isKnown(),"ring type begins unknown in fixture");
+        check(!MmoRules.absorb(hiddenRing,Dungeon.hero) && hiddenRing.levelKnown && hiddenRing.cursedKnown && !hiddenRing.isKnown() && !hiddenRing.isIdentified(),"unmerged ring reveals level and curse but not type");
+        hiddenRing.collect();RingOfHaste donorRing=new RingOfHaste();donorRing.level(5);
+        check(MmoRules.absorb(donorRing,Dungeon.hero) && hiddenRing.levelKnown && hiddenRing.cursedKnown && !hiddenRing.isKnown() && !hiddenRing.isIdentified(),"merged ring still does not reveal type");
+        com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost hiddenWand=new com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost();
+        check(!MmoRules.absorb(hiddenWand,Dungeon.hero) && hiddenWand.levelKnown && hiddenWand.cursedKnown && !hiddenWand.curChargeKnown && !hiddenWand.isIdentified(),"unmerged wand retains unknown charge");
+        hiddenWand.collect();com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost donorWand=new com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost();donorWand.level(5);
+        check(MmoRules.absorb(donorWand,Dungeon.hero) && hiddenWand.levelKnown && hiddenWand.cursedKnown && !hiddenWand.curChargeKnown && !hiddenWand.isIdentified(),"merged wand retains unknown charge");
+        lower.levelKnown=false;lower.cursedKnown=false;MmoRules.consolidateEquipment();
+        check(lower.levelKnown && lower.cursedKnown,"existing inventory gains level and curse information");
+        Dungeon.challenges=0;Sword nativeUnknown=new Sword();MmoRules.absorb(nativeUnknown,Dungeon.hero);
+        check(!nativeUnknown.levelKnown && !nativeUnknown.cursedKnown,"disabled absorption retains native identification");
         System.out.println("PASS: "+checks+" MMO regression checks");
     }
 }
