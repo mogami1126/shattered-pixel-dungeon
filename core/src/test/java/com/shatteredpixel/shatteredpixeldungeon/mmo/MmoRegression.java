@@ -85,6 +85,12 @@ public class MmoRegression {
     }
     private static void setup(String assets) {
         com.badlogic.gdx.utils.GdxNativesLoader.load();
+        Gdx.app=(com.badlogic.gdx.Application)Proxy.newProxyInstance(com.badlogic.gdx.Application.class.getClassLoader(),new Class[]{com.badlogic.gdx.Application.class},(o,m,a)->{
+            if(m.getName().equals("getType"))return com.badlogic.gdx.Application.ApplicationType.Desktop;
+            if(m.getReturnType()==int.class)return 0;
+            if(m.getReturnType()==boolean.class)return false;
+            return null;
+        });
         com.watabou.noosa.Game.version="4.0.2-MMO.1-INDEV";
         Map<String,Object> prefs=new HashMap<>();
         GameSettings.set((Preferences)Proxy.newProxyInstance(Preferences.class.getClassLoader(),new Class[]{Preferences.class},(o,m,a)->{
@@ -189,9 +195,6 @@ public class MmoRegression {
         Sword cursed=new Sword();cursed.cursed=true;check(MmoRules.absorb(cursed,h),"unidentified cursed gear can merge");
         for(int i=0;i<100;i++)h.belongings.backpack.items.add(new Sword());
         check(h.belongings.backpack.canHold(new Sword()),"large bag capacity");
-        check(!MmoRules.ordinaryPickup(new com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey()),"automatic pickup preserves key journal flow");
-        check(!MmoRules.ordinaryPickup(new Dewdrop()),"automatic pickup preserves dew healing flow");
-        check(MmoRules.ordinaryPickup(new Sword()),"ordinary equipment can be collected automatically");
 
         Target clock=new Target();for(int i=0;i<65536;i++)clock.advance(Float.MIN_VALUE);
         check(clock.cooldown()==256,"tiny positive actions advance time exactly");
@@ -308,6 +311,31 @@ public class MmoRegression {
         check(completions[0]==1,"hero animation retains native timing");
         SPDSettings.fastTurns(false);fastSprite.ch=fastMob;fastSprite.start(()->completions[0]++);fastSprite.tick();
         check(completions[0]==1,"disabled fast mode retains monster animation timing");
+        Dungeon.challenges=Challenges.AUTO_PICKUP | Challenges.LARGE_BAGS;
+        TestLevel pickupFloor=new TestLevel();pickupFloor.setSize(5,5);pickupFloor.heaps=new SparseArray<>();
+        Arrays.fill(pickupFloor.passable,true);Arrays.fill(pickupFloor.heroFOV,true);
+        Arrays.fill(pickupFloor.map,Terrain.EMPTY);Dungeon.level=pickupFloor;
+        Hero collector=new Hero();collector.heroClass=HeroClass.WARRIOR;collector.sprite=new QuietSprite();
+        collector.pos=12;collector.HP=10;collector.HT=20;Dungeon.hero=collector;
+        com.shatteredpixel.shatteredpixeldungeon.journal.Notes.reset();
+        com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb bomb=new com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb();
+        bomb.fuse=new com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb.Fuse().ignite(bomb);
+        com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey key=new com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey(1);
+        Heap loose=new Heap();loose.pos=12;loose.type=Heap.Type.HEAP;
+        loose.items.add(bomb);loose.items.add(key);loose.items.add(new Dewdrop());
+        Item refusing=new Item(){public boolean doPickUp(Hero user,int pos){return false;}};loose.items.add(refusing);
+        pickupFloor.heaps.put(12,loose);
+        Heap chest=new Heap();chest.pos=13;chest.type=Heap.Type.CHEST;chest.items.add(new com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb());pickupFloor.heaps.put(13,chest);
+        float beforePickup=collector.cooldown();MmoRules.pickup(collector);
+        check(collector.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb.class)!=null && bomb.fuse==null,"automatic pickup collects and defuses bombs");
+        check(com.shatteredpixel.shatteredpixeldungeon.journal.Notes.keyCount(key)==1 && !collector.belongings.backpack.contains(key),"automatic keys go to journal rather than backpack");
+        check(collector.HP==11,"automatic dew retains healing hook");
+        check(loose.items.size()==1 && loose.items.contains(refusing),"refused items stay on ground while other items are collected");
+        check(chest.items.size()==1,"automatic collection does not open chests");
+        check(collector.cooldown()==beforePickup,"bulk hooks do not spend per-item turns");
+        try {collector.pickUpAutomatically(new Item(){public boolean doPickUp(Hero user,int pos){throw new IllegalStateException("fixture");}},12);} catch(IllegalStateException expected){}
+        collector.spendAndNext(1);
+        check(collector.cooldown()==beforePickup+1,"pickup scope clears even after a hook throws");
         System.out.println("PASS: "+checks+" MMO regression checks");
     }
 }

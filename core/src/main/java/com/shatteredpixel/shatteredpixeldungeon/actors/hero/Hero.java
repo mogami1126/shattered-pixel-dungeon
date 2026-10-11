@@ -831,15 +831,30 @@ public class Hero extends Char {
 	}
 
 	public void spendAndNextConstant(float time ) {
+		if (automaticPickup) return;
 		busy();
 		spendConstant( time );
 		next();
 	}
 
 	public void spendAndNext( float time ) {
+		if (automaticPickup) return;
 		busy();
 		spend( time );
 		next();
+	}
+
+	private boolean automaticPickup;
+
+	/** Run the normal item hooks without ending the movement action for each item. */
+	public boolean pickUpAutomatically(Item item, int pos) {
+		boolean previous = automaticPickup;
+		automaticPickup = true;
+		try {
+			return item.doPickUp(this, pos);
+		} finally {
+			automaticPickup = previous;
+		}
 	}
 	
 	@Override

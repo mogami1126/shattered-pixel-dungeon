@@ -318,18 +318,10 @@ public final class MmoRules {
                     Dungeon.energy = (int)Math.min(Integer.MAX_VALUE, (long)Dungeon.energy+item.quantity());
                     com.shatteredpixel.shatteredpixeldungeon.journal.Catalog.setSeen(item.getClass());
                     com.shatteredpixel.shatteredpixeldungeon.Statistics.itemTypesDiscovered.add(item.getClass());heap.items.remove(item);
-                } else if(ordinaryPickup(item) && (absorb(item,h) || item.collect(h.belongings.backpack))) heap.items.remove(item);
+                } else if(h.pickUpAutomatically(item,pos)) heap.items.remove(item);
             }
             if(heap.items.isEmpty()) heap.destroy(); else if(heap.sprite!=null) heap.sprite.view(heap);
         }
-    }
-    public static boolean ordinaryPickup(Item item) {
-        // Keys, quest rewards, dew, active bombs and journal entries have special pickup hooks.
-        // Preserve their manual flow rather than putting them into the ordinary inventory.
-        try {
-            Class<?> owner=item.getClass().getMethod("doPickUp",Hero.class,int.class).getDeclaringClass();
-            return owner==Item.class || owner==EquipableItem.class || owner==com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon.class;
-        } catch(ReflectiveOperationException error) {return false;}
     }
     public static int extraLootDraws() {
         int amount=Random.Int(3)+1;
