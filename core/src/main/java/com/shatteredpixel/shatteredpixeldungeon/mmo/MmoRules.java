@@ -33,6 +33,8 @@ public final class MmoRules {
         ensureCategoryBag(ScrollHolder.class, Dungeon.LimitedDrops.SCROLL_HOLDER);
         ensureCategoryBag(PotionBandolier.class, Dungeon.LimitedDrops.POTION_BANDOLIER);
         ensureCategoryBag(MagicalHolster.class, Dungeon.LimitedDrops.MAGICAL_HOLSTER);
+        ensureEquipmentBag(WeaponBag.class);
+        ensureEquipmentBag(RingBag.class);
     }
     private static void ensureCategoryBag(Class<? extends Bag> type, Dungeon.LimitedDrops drop) {
         for (Bag bag : Dungeon.hero.belongings.getBags()) {
@@ -43,6 +45,14 @@ public final class MmoRules {
         }
         Bag bag = com.watabou.utils.Reflection.newInstance(type);
         if (bag != null && bag.collect(Dungeon.hero.belongings.backpack)) drop.drop();
+    }
+    private static void ensureEquipmentBag(Class<? extends Bag> type) {
+        for (Bag bag : Dungeon.hero.belongings.getBags()) if (type.isInstance(bag)) return;
+        Bag bag=com.watabou.utils.Reflection.newInstance(type);
+        if (bag != null) bag.collect(Dungeon.hero.belongings.backpack);
+    }
+    public static GameNumber mobGrowth() {
+        return on(Challenges.MMO) ? GameNumber.power(1.5, BigInteger.valueOf(Math.max(0,Dungeon.depth-1))) : GameNumber.ONE;
     }
     public static boolean scaled() { return on(Challenges.UNLIMITED_GROWTH) || on(Challenges.MMO); }
     public static boolean growing(Item item) {
@@ -137,43 +147,15 @@ public final class MmoRules {
         initialize(ch); return GameNumber.decode(ch.mmoAttack);
     }
     public static void initialize(Char ch) {
-        if (!scaled() || ch.mmoInitialized || Dungeon.level == null || ch instanceof Hero) return;
-        ch.mmoInitialized=true;
-        if (ch.alignment == Char.Alignment.ENEMY && on(Challenges.MMO)) {
-            ch.mmoHealth=Dungeon.level.mmoFloorHealth; ch.mmoAttack=Dungeon.level.mmoFloorAttack;
-        } else if (ch.alignment == Char.Alignment.ALLY && Dungeon.hero != null) {
-            ch.mmoHealth=health(Dungeon.hero).encode();
-            ch.mmoAttack=attack(Dungeon.hero).encode();
-        }
+        if (!scaled() || ch instanceof Hero || (ch.mmoInitialized && (!(ch instanceof Mob) || !on(Challenges.MMO)))) return;
+        // Recompute fixed depth scaling for old saves too; never retain player-derived snapshots.
+        GameNumber factor=ch instanceof Mob && !(ch instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC) ? mobGrowth() : GameNumber.ONE;
+        ch.mmoHealth=factor.encode();ch.mmoAttack=factor.encode();ch.mmoInitialized=true;
     }
     public static void floor(Level level) {
-        if (!on(Challenges.MMO) || Dungeon.hero == null) return;
-        Hero h=Dungeon.hero;
-        GameNumber output=attack(h).times(h.belongings.weapon() == null ? 4 : Math.max(1,(h.belongings.weapon().min()+h.belongings.weapon().max())/2.0));
-        // Compare permanent weapon and wand outputs; exclude temporary combat buffs.
-        for (Item item:h.belongings) if (item instanceof DamageWand) {
-            DamageWand w=(DamageWand)item;
-            output=output.max(itemFactor(w).times(Math.max(1,(w.min()+w.max())/2.0)));
-        }
-        if(h.belongings.weapon() instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff) {
-            Wand embedded=((com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)h.belongings.weapon()).mmoWand();
-            if(embedded instanceof DamageWand) {
-                DamageWand w=(DamageWand)embedded;
-                output=output.max(itemFactor(w).times(Math.max(1,(w.min()+w.max())/2.0)));
-            }
-        }
-        GameNumber hp=health(h).times(h.HT);
-        output=output.max(GameNumber.decode(h.mmoBestOutput)); hp=hp.max(GameNumber.decode(h.mmoBestHealth));
-        h.mmoBestOutput=output.encode(); h.mmoBestHealth=hp.encode();
-        double pressure=Math.pow(1.01, Math.max(0,Dungeon.depth-1));
-        // Regional reference HP/damage preserves the relative strength and stages of every species.
-        double referenceHP = 10 + 4*Math.max(0,Dungeon.depth-1);
-        double referenceDamage = 4 + 1.2*Math.max(0,Dungeon.depth-1);
-        level.mmoFloorHealth=output.times(1.5*pressure/referenceHP).max(GameNumber.ONE).encode();
-        Armor armor=h.belongings.armor();
-        GameNumber armorPower=armor==null ? GameNumber.ZERO : itemFactor(armor).times(Math.max(0,(armor.DRMin()+armor.DRMax())/2.0));
-        level.mmoFloorAttack=hp.times(.06*pressure/referenceDamage).max(GameNumber.ONE).encode();
-        level.mmoFloorArmor=armorPower.encode();
+        level.mmoFloorHealth=mobGrowth().encode();
+        level.mmoFloorAttack=mobGrowth().encode();
+        level.mmoFloorArmor=GameNumber.ZERO.encode();
     }
     public static int normalized(Char target, GameNumber actual) {
         GameNumber units=actual.divide(health(target)).plus(target.mmoRemainder);
@@ -185,12 +167,9 @@ public final class MmoRules {
     }
     public static int physical(Char attacker, Char target, int damage, int dr) {
         GameNumber hit=attack(attacker).times(Math.max(0,damage));
-        GameNumber armor=target instanceof Hero ? itemFactor(((Hero)target).belongings.armor()) : health(target);
+        GameNumber armor=target instanceof Hero ? itemFactor(((Hero)target).belongings.armor()) : GameNumber.ONE;
         GameNumber defense=armor.times(Math.max(0,dr));
-        GameNumber flat=on(Challenges.MMO) && attacker.alignment==Char.Alignment.ENEMY && target instanceof Hero && Dungeon.level!=null ? GameNumber.decode(Dungeon.level.mmoFloorArmor) : GameNumber.ZERO;
-        // Cancel the shared armor magnitude before adding the much smaller health-sized hit.
-        // (1e100 + 6) - 1e100 must still deal 6, not become zero through precision loss.
-        GameNumber net=flat.compareTo(defense)>=0 ? hit.plus(flat.minus(defense)) : hit.minus(defense.minus(flat));
+        GameNumber net=hit.minus(defense);
         return normalized(target, extraResistance(target,net,false));
     }
     private static GameNumber extraResistance(Char target,GameNumber hit,boolean elemental) {
@@ -238,6 +217,10 @@ public final class MmoRules {
         GameNumber a=GameNumber.of(Math.max(0,accuracy)), d=GameNumber.of(Math.max(0,evasion));
         if (attacker instanceof Hero) a=a.times(GameNumber.power(1.3,ringExtra((Hero)attacker,RingOfAccuracy.class)));
         if (defender instanceof Hero) d=d.times(GameNumber.power(1.125,ringExtra((Hero)defender,RingOfEvasion.class)));
+        if (on(Challenges.MMO)) {
+            if (attacker instanceof Mob && !(attacker instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC)) a=a.times(Math.max(1,Dungeon.depth));
+            if (defender instanceof Mob && !(defender instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC)) d=d.times(Math.max(1,Dungeon.depth));
+        }
         double p;
         if (a.compareTo(GameNumber.ZERO)==0) p=0;
         else if (d.compareTo(GameNumber.ZERO)==0) p=1;
@@ -259,17 +242,46 @@ public final class MmoRules {
         if (leveled && h.sprite!=null) h.sprite.showStatus(com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite.POSITIVE, "Lv "+heroLevel(h));
     }
     public static boolean absorb(Item item,Hero h) {
-        if (!on(Challenges.ABSORPTION) || item.unique || item.trueLevel()<0 || item.trueLevel()>3 || item.mmoExtra.signum()>0 || item.cursed || item.isEquipped(h)) return false;
-        if (item instanceof Weapon && ((Weapon)item).enchantment!=null || item instanceof Armor && ((Armor)item).glyph!=null) return false;
+        if (!on(Challenges.ABSORPTION) || !mergeable(item) || item.isEquipped(h)) return false;
         Item target=null;
-        if (item instanceof Armor) target=h.belongings.armor();
-        else if (item instanceof Ring) {
-            if (h.belongings.ring()!=null && h.belongings.ring().getClass()==item.getClass()) target=h.belongings.ring();
-            else if(h.belongings.misc()!=null && h.belongings.misc().getClass()==item.getClass()) target=h.belongings.misc();
-        } else if(item instanceof Weapon && item instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon) target=h.belongings.weapon();
-        else if(item instanceof Wand) for(Item i:h.belongings) if(i instanceof Wand && i!=item && i.getClass()==item.getClass()) { target=i; break; }
-        if(target==null || target==item || !target.isUpgradable()) return false;
-        target.upgrade(); Item.updateQuickslot(); return true;
+        for (Item candidate:h.belongings) {
+            if(candidate==item || candidate.getClass()!=item.getClass() || !mergeable(candidate)) continue;
+            if(target==null || candidate.isEquipped(h) || (!target.isEquipped(h) && candidate.mmoLevel().compareTo(target.mmoLevel())>0)) target=candidate;
+            if(target.isEquipped(h)) break;
+        }
+        if(target==null) return false;
+        BigInteger total=target.mmoLevel().add(item.mmoLevel()).add(BigInteger.ONE);
+        if(item.mmoLevel().compareTo(target.mmoLevel())>0) copyMergeState(item,target);
+        int nativeLevel=total.min(BigInteger.valueOf(20)).max(BigInteger.valueOf(Integer.MIN_VALUE)).intValue();
+        target.level(nativeLevel);target.mmoExtra=total.subtract(BigInteger.valueOf(nativeLevel));
+        if(target instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)
+            ((com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)target).updateWand(false);
+        Item.updateQuickslot();return true;
+    }
+    private static boolean mergeable(Item item) {
+        return !item.unique && (item instanceof Armor || item instanceof Ring || item instanceof Wand ||
+                item instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon);
+    }
+    private static void copyMergeState(Item source,Item target) {
+        target.cursed=source.cursed;target.cursedKnown=source.cursedKnown;target.levelKnown=source.levelKnown;
+        if(source instanceof Weapon) {
+            Weapon a=(Weapon)source,b=(Weapon)target;
+            b.enchantment=a.enchantment;b.curseInfusionBonus=a.curseInfusionBonus;b.masteryPotionBonus=a.masteryPotionBonus;
+        } else if(source instanceof Armor) {
+            Armor a=(Armor)source,b=(Armor)target;
+            b.glyph=a.glyph;b.curseInfusionBonus=a.curseInfusionBonus;b.masteryPotionBonus=a.masteryPotionBonus;
+        } else if(source instanceof Wand) {
+            Wand a=(Wand)source,b=(Wand)target;
+            b.curseInfusionBonus=a.curseInfusionBonus;b.resinBonus=a.resinBonus;
+        }
+    }
+    public static void consolidateEquipment() {
+        if (!on(Challenges.ABSORPTION) || Dungeon.hero==null || Dungeon.hero.belongings.lostInventory()) return;
+        java.util.ArrayList<Item> inventory=new java.util.ArrayList<>();
+        for(Item item:Dungeon.hero.belongings) if(!item.isEquipped(Dungeon.hero) && mergeable(item)) inventory.add(item);
+        inventory.sort((a,b)->a.mmoLevel().compareTo(b.mmoLevel()));
+        for(Item item:inventory) if(Dungeon.hero.belongings.backpack.contains(item) && absorb(item,Dungeon.hero))
+            item.detachAll(Dungeon.hero.belongings.backpack);
     }
     public static void pickup(Hero h) {
         if(!on(Challenges.AUTO_PICKUP) || Dungeon.level==null) return;
@@ -306,21 +318,29 @@ public final class MmoRules {
             return owner==Item.class || owner==EquipableItem.class || owner==com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon.class;
         } catch(ReflectiveOperationException error) {return false;}
     }
+    public static int extraLootDraws() {
+        int amount=Random.Int(3)+1;
+        if(on(Challenges.MMO)) amount+=(int)Math.round(Math.max(Math.sqrt(mobGrowth().bounded(Integer.MAX_VALUE)),Dungeon.depth));
+        return amount;
+    }
+    public static Item extraLoot() {
+        int max,min;
+        if(Dungeon.depth<=2){max=10;min=0;}
+        else if(Dungeon.depth<=6){max=8;min=1;}
+        else if(Dungeon.depth<=10){max=6;min=2;}
+        else {max=5;min=3;}
+        int roll=Random.Int(max)+min;
+        if(roll<=2)return Generator.random();
+        if(roll<=7)return RingOfWealth.genConsumableDrop((roll-3)*5);
+        return null;
+    }
     public static void loot(Mob mob) {
-        if(!on(Challenges.MASS_LOOT) || mob.alignment!=Char.Alignment.ENEMY || mob.EXP<=0 || Dungeon.level==null) return;
-        int draws=mob.properties().contains(Char.Property.BOSS) ? 30 : Random.IntRange(3,6);
+        if(!on(Challenges.MASS_LOOT) || mob.alignment!=Char.Alignment.ENEMY || Dungeon.level==null) return;
+        // TooCruel GRINDING_2 + GRINDING_3: depth-dependent draws, consumables, and null rolls.
+        // It has neither an EXP filter nor a special 30-item boss award.
+        int draws=extraLootDraws();
         for(int i=0;i<draws;i++) {
-            int roll=Random.Int(100); Item item;
-            if(roll<18)item=Generator.random(Generator.Category.WEAPON);
-            else if(roll<30)item=Generator.random(Generator.Category.ARMOR);
-            else if(roll<40)item=Generator.random(Generator.Category.RING);
-            else if(roll<50)item=Generator.random(Generator.Category.WAND);
-            else if(roll<62)item=Generator.random(Generator.Category.POTION);
-            else if(roll<74)item=Generator.random(Generator.Category.SCROLL);
-            else if(roll<82)item=new ScrollOfUpgrade();
-            else if(roll<88)item=Generator.random(Generator.Category.FOOD);
-            else if(roll<94)item=Generator.random(Random.Int(2)==0 ? Generator.Category.SEED : Generator.Category.STONE);
-            else item=Random.Int(2)==0 ? new Gold().quantity(25) : new EnergyCrystal().quantity(2);
+            Item item=extraLoot();
             if(item!=null) Dungeon.level.drop(item,mob.pos).sprite.drop();
         }
     }

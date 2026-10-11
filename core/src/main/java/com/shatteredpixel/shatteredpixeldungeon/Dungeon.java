@@ -821,7 +821,10 @@ public class Dungeon {
 
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
-		if (fullLoad) com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.ensureCategoryBags();
+		if (fullLoad) {
+            com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.ensureCategoryBags();
+            com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.consolidateEquipment();
+        }
 
 	}
 	
@@ -837,6 +840,7 @@ public class Dungeon {
 		if (level == null){
 			throw new IOException();
 		} else {
+            com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.floor(level);
 			return level;
 		}
 	}

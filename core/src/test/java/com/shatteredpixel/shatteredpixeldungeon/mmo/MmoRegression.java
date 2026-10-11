@@ -111,7 +111,7 @@ public class MmoRegression {
         Dungeon.hero.belongings.armor=armor;
         Target armorAttacker=new Target();armorAttacker.alignment=Char.Alignment.ENEMY;
         Dungeon.level.mmoFloorArmor=MmoRules.itemFactor(armor).times(8).encode();
-        check(MmoRules.physical(armorAttacker,Dungeon.hero,6,8)==6,"huge equal armor terms preserve small damage");
+        check(MmoRules.physical(armorAttacker,Dungeon.hero,6,8)==0,"monster damage no longer gains player armor compensation");
         Dungeon.hero.belongings.armor=null;Dungeon.level.mmoFloorArmor=GameNumber.ZERO.encode();
         Sword direct=new Sword();direct.level(Integer.MAX_VALUE);
         check(direct.trueLevel()==20 && direct.mmoLevel().equals(BigInteger.valueOf(Integer.MAX_VALUE)),"direct level setter keeps native formulas bounded");
@@ -164,16 +164,16 @@ public class MmoRegression {
 
         MmoRules.floor(Dungeon.level);String floorHP=Dungeon.level.mmoFloorHealth;
         Dungeon.hero.belongings.weapon=null;MmoRules.floor(Dungeon.level);
-        check(Dungeon.level.mmoFloorHealth.equals(floorHP),"remembered loadout prevents unequip exploit");
+        check(Dungeon.level.mmoFloorHealth.equals(floorHP),"fixed depth growth ignores player loadout");
         Mob first=new Rat();MmoRules.initialize(first);String firstHP=first.mmoHealth;
         Dungeon.hero.belongings.weapon=sword;sword.mmoExtra=million.multiply(BigInteger.TEN);
         check(first.mmoHealth.equals(firstHP),"live floor does not chase player upgrades");
-        Mob summon=new Rat();MmoRules.initialize(summon);check(summon.mmoHealth.equals(firstHP),"summons share floor snapshot");
+        Mob summon=new Rat();MmoRules.initialize(summon);check(summon.mmoHealth.equals(firstHP),"summons share fixed depth growth");
 
         Hero h=Dungeon.hero;Sword low=new Sword();low.level(2);BigInteger before=sword.mmoLevel();
-        check(MmoRules.absorb(low,h) && sword.mmoLevel().equals(before.add(BigInteger.ONE)),"family absorption adds exactly one level");
-        Sword high=new Sword();high.level(4);check(!MmoRules.absorb(high,h),"high-level gear survives absorption");
-        Sword cursed=new Sword();cursed.cursed=true;check(!MmoRules.absorb(cursed,h),"cursed gear survives absorption");
+        check(MmoRules.absorb(low,h) && sword.mmoLevel().equals(before.add(BigInteger.valueOf(3))),"duplicate absorption sums real levels");
+        Sword high=new Sword();high.level(4);check(MmoRules.absorb(high,h),"high-level gear can merge");
+        Sword cursed=new Sword();cursed.cursed=true;check(MmoRules.absorb(cursed,h),"unidentified cursed gear can merge");
         for(int i=0;i<100;i++)h.belongings.backpack.items.add(new Sword());
         check(h.belongings.backpack.canHold(new Sword()),"large bag capacity");
         check(!MmoRules.ordinaryPickup(new com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey()),"automatic pickup preserves key journal flow");
@@ -196,10 +196,20 @@ public class MmoRegression {
         Dungeon.hero.belongings.weapon=null;Dungeon.hero.HP=Dungeon.hero.HT=100;
         Generator.fullReset();Random.pushGenerator(901);
         TestLevel drops=new TestLevel();Dungeon.level=drops;
-        for(int i=0;i<20;i++){int beforeCount=drops.drops.size();MmoRules.loot(new Rat());check(drops.drops.size()-beforeCount>=3 && drops.drops.size()-beforeCount<=6,"normal bonus drop range");}
-        int beforeCount=drops.drops.size();MmoRules.loot(new DwarfKing());check(drops.drops.size()-beforeCount==30,"boss bonus loot count");
-        Mob unrewarded=new Rat();unrewarded.EXP=0;beforeCount=drops.drops.size();MmoRules.loot(unrewarded);
-        check(drops.drops.size()==beforeCount,"unrewarded summons do not yield bonus loot");
+        int drawn=0;
+        for(int i=0;i<20;i++){int beforeCount=drops.drops.size();MmoRules.loot(new Rat());int added=drops.drops.size()-beforeCount;drawn+=added;check(added>=0 && added<=4,"depth one drops include null rolls and at most four draws");}
+        check(drawn>0,"extra loot still drops items");
+        int beforeCount=drops.drops.size();MmoRules.loot(new DwarfKing());check(drops.drops.size()-beforeCount<=4,"boss no longer has a thirty-item award");
+        Mob unrewarded=new Rat();unrewarded.EXP=0;boolean unrewardedDrop=false;
+        for(int i=0;i<30;i++){beforeCount=drops.drops.size();MmoRules.loot(unrewarded);unrewardedDrop|=drops.drops.size()>beforeCount;}
+        check(unrewardedDrop,"original extra-loot logic does not gate on experience");
+        Dungeon.depth=5;MmoRules.floor(Dungeon.level);
+        check(MmoRules.mobGrowth().compareTo(GameNumber.of(5.0625))==0,"original depth five growth is 1.5 to the fourth");
+        Rat legacy=new Rat();legacy.mmoInitialized=true;legacy.mmoHealth=giant.encode();MmoRules.initialize(legacy);
+        check(GameNumber.decode(legacy.mmoHealth).compareTo(GameNumber.of(5.0625))==0,"old player-scaled monsters migrate to fixed depth growth");
+        Dungeon.depth=25;
+        check(MmoRules.mobGrowth().divide(GameNumber.of(Math.pow(1.5,24))).bounded(2)>.999999,"original depth twenty-five growth");
+        Dungeon.depth=1;Dungeon.challenges &= ~Challenges.MMO;
         Random.popGenerator();
 
         TestKing king=new TestKing();king.sprite=new QuietSprite();king.mmoInitialized=true;king.mmoHealth=giant.encode();
@@ -225,13 +235,34 @@ public class MmoRegression {
         com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart dart=new com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart();dart.collect();
         Dungeon.challenges=Challenges.LARGE_BAGS;
         MmoRules.ensureCategoryBags();
-        check(Dungeon.hero.belongings.getBags().size()==5,"large-bag saves receive all four category bags");
+        check(Dungeon.hero.belongings.getBags().size()==7,"large-bag saves receive all six category bags");
         check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch.class)==originalPouch,"existing category bags preserved");
         check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier.class).contains(water),"existing waterskin sorted into potion bag");
         check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster.class).contains(dart) && dart.holster,"existing thrown weapon gains holster mechanics");
         MmoRules.ensureCategoryBags();
-        check(Dungeon.hero.belongings.getBags().size()==5,"loading again does not duplicate bags");
+        check(Dungeon.hero.belongings.getBags().size()==7,"loading again does not duplicate bags");
         check(Dungeon.LimitedDrops.SCROLL_HOLDER.dropped() && Dungeon.LimitedDrops.POTION_BANDOLIER.dropped() && Dungeon.LimitedDrops.MAGICAL_HOLSTER.dropped(),"shop bag flags match supplied bags");
+        Dungeon.challenges=Challenges.MMO_PRESET;
+        Sword lower=new Sword();lower.level(3);lower.enchantment=new com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blazing();lower.collect();
+        Sword upper=new Sword();upper.level(100);upper.enchantment=null;upper.cursed=false;upper.levelKnown=true;upper.cursedKnown=true;
+        check(MmoRules.absorb(upper,Dungeon.hero) && lower.mmoLevel().equals(BigInteger.valueOf(104)),"merge directly sums real high levels");
+        check(lower.enchantment==null && !lower.cursed && lower.levelKnown,"higher cleansed item clears lower enchantment and curse");
+        Sword zero=new Sword();BigInteger prior=lower.mmoLevel();check(MmoRules.absorb(zero,Dungeon.hero) && lower.mmoLevel().equals(prior.add(BigInteger.ONE)),"white item contributes one real level");
+        MagesStaff uniqueStaff=new MagesStaff(new com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile());Dungeon.hero.belongings.weapon=uniqueStaff;
+        Sword ordinarySword=new Sword();ordinarySword.level(2);BigInteger staffBefore=uniqueStaff.mmoLevel();MmoRules.absorb(ordinarySword,Dungeon.hero);
+        check(uniqueStaff.mmoLevel().equals(staffBefore),"ordinary melee weapons cannot upgrade mage staff");
+        Sword duplicate=new Sword();duplicate.level(5);duplicate.collect();MmoRules.consolidateEquipment();
+        check(Dungeon.hero.belongings.getAllItems(Sword.class).size()==1 && lower.mmoLevel().equals(BigInteger.valueOf(114)),"existing duplicate inventory consolidates once without item-level loss");
+        MmoRules.consolidateEquipment();check(lower.mmoLevel().equals(BigInteger.valueOf(114)),"consolidation is idempotent");
+        lower.level(0);Sword white=new Sword();check(MmoRules.absorb(white,Dungeon.hero) && lower.mmoLevel().equals(BigInteger.ONE),"two white items merge to plus one");
+        lower.level(1);Sword plusOne=new Sword();plusOne.level(1);check(MmoRules.absorb(plusOne,Dungeon.hero) && lower.mmoLevel().equals(BigInteger.valueOf(3)),"two plus-one items merge to plus three");
+        lower.level(1);Sword plusEighteen=new Sword();plusEighteen.level(18);check(MmoRules.absorb(plusEighteen,Dungeon.hero) && lower.mmoLevel().equals(BigInteger.valueOf(20)),"plus one and plus eighteen merge to plus twenty");
+        check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.WeaponBag.class).contains(lower),"ordinary weapon is held by weapon bag");
+        RingOfMight spareRing=new RingOfMight();spareRing.collect();
+        check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.RingBag.class).contains(spareRing),"ring is held by ring bag");
+        Dungeon.depth=5;Rat fixedArmor=new Rat();
+        check(MmoRules.physical(new Target(),fixedArmor,10,2)==1,"monster armor stays native while its health scales");
+        Dungeon.depth=1;
         System.out.println("PASS: "+checks+" MMO regression checks");
     }
 }

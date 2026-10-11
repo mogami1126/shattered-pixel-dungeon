@@ -448,7 +448,11 @@ public class WndBag extends WndTabbed {
 			return Icons.get( Icons.WAND_HOLSTER );
 		} else if (bag instanceof PotionBandolier) {
 			return Icons.get( Icons.POTION_BANDOLIER );
-		} else {
+		} else if (bag instanceof com.shatteredpixel.shatteredpixeldungeon.items.bags.WeaponBag) {
+            return new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER, null);
+        } else if (bag instanceof com.shatteredpixel.shatteredpixeldungeon.items.bags.RingBag) {
+            return new ItemSprite(ItemSpriteSheet.RING_HOLDER, null);
+        } else {
 			return Icons.get( Icons.BACKPACK );
 		}
 	}
@@ -478,6 +482,7 @@ public class WndBag extends WndTabbed {
 					return SPDAction.BAG_4;
 				case 5:
 					return SPDAction.BAG_5;
+                case 6: case 7: return null;
 			}
 		}
 
