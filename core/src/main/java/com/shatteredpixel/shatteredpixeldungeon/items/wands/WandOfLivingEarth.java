@@ -410,16 +410,16 @@ public class WandOfLivingEarth extends DamageWand {
 
 		@Override
 		public int damageRoll() {
-			return Random.NormalIntRange(2, 4 + Dungeon.scalingDepth()/2);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(2, 4 + Dungeon.scalingDepth()/2);
 		}
 
 		@Override
 		public int drRoll() {
 			int dr = super.drRoll();
 			if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
-				return dr + Random.NormalIntRange(wandLevel, 2 + wandLevel);
+				return dr + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(wandLevel, 2 + wandLevel);
 			} else {
-				return dr + Random.NormalIntRange(wandLevel, 3 + 3 * wandLevel);
+				return dr + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(wandLevel, 3 + 3 * wandLevel);
 			}
 		}
 

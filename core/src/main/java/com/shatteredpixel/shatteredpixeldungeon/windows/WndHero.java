@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
@@ -157,9 +159,9 @@ public class WndHero extends WndTabbed {
 			IconTitle title = new IconTitle();
 			title.icon( HeroSprite.avatar(hero) );
 			if (hero.name().equals(hero.className()))
-				title.label( Messages.get(this, "title", hero.lvl, hero.className() ).toUpperCase( Locale.ENGLISH ) );
+				title.label( Messages.get(this, "title", MmoRules.heroLevel(hero), hero.className() ).toUpperCase( Locale.ENGLISH ) );
 			else
-				title.label((hero.name() + "\n" + Messages.get(this, "title", hero.lvl, hero.className())).toUpperCase(Locale.ENGLISH));
+				title.label((hero.name() + "\n" + Messages.get(this, "title", MmoRules.heroLevel(hero), hero.className())).toUpperCase(Locale.ENGLISH));
 			title.color(Window.TITLE_COLOR);
 			title.setRect( 0, 0, WIDTH-16, 0 );
 			add(title);
@@ -190,9 +192,10 @@ public class WndHero extends WndTabbed {
 			if (strBonus > 0)           statSlot( Messages.get(this, "str"), hero.STR + " + " + strBonus );
 			else if (strBonus < 0)      statSlot( Messages.get(this, "str"), hero.STR + " - " + -strBonus );
 			else                        statSlot( Messages.get(this, "str"), hero.STR() );
-			if (hero.shielding() > 0)   statSlot( Messages.get(this, "health"), hero.HP + "+" + hero.shielding() + "/" + hero.HT );
+			if (MmoRules.scaled()) statSlot(Messages.get(this, "health"), MmoRules.health(hero).times(hero.HP)+"/"+MmoRules.health(hero).times(hero.HT));
+			else if (hero.shielding() > 0)   statSlot( Messages.get(this, "health"), hero.HP + "+" + hero.shielding() + "/" + hero.HT );
 			else                        statSlot( Messages.get(this, "health"), (hero.HP) + "/" + hero.HT );
-			statSlot( Messages.get(this, "exp"), hero.exp + "/" + hero.maxExp() );
+			statSlot( Messages.get(this, "exp"), MmoRules.expText(hero) );
 
 			pos += GAP;
 

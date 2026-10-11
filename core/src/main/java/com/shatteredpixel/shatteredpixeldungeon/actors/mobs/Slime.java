@@ -46,7 +46,7 @@ public class Slime extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 2, 5 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 2, 5 );
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ public class Slime extends Mob {
 	}
 	
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		float scaleFactor = AscensionChallenge.statModifier(this);
 		float scaledDmg = dmg/scaleFactor;
 		if (scaledDmg >= 5){
@@ -63,7 +63,7 @@ public class Slime extends Mob {
 			scaledDmg = 4 + (float)(Math.sqrt(8*(scaledDmg - 4) + 1) - 1)/2;
 		}
 		dmg = (int)(scaledDmg*AscensionChallenge.statModifier(this));
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 	}
 
 	@Override

@@ -163,7 +163,7 @@ public class VaultMirror extends NPC {
 	}
 
 	@Override
-	public void damage( int dmg, Object src ) {
+	public void damageBase( int dmg, Object src ) {
 		//do nothing
 	}
 

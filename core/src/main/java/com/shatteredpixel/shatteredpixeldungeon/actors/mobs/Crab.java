@@ -44,7 +44,7 @@ public class Crab extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 7 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1, 7 );
 	}
 	
 	@Override
@@ -54,6 +54,6 @@ public class Crab extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 4);
 	}
 }

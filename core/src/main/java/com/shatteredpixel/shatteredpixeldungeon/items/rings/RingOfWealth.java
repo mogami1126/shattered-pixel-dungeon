@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.rings;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -105,7 +107,7 @@ public class RingOfWealth extends Ring {
 	}
 	
 	public static float dropChanceMultiplier( Char target ){
-		return (float)Math.pow(1.20, getBuffedBonus(target, Wealth.class));
+		return MmoRules.ringMultiplier(target, RingOfWealth.class, 1.2, getBuffedBonus(target, Wealth.class), 256);
 	}
 	
 	public static ArrayList<Item> tryForBonusDrop(Char target, int tries ){

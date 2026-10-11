@@ -122,9 +122,9 @@ public class VaultSentry extends NPC {
 									&& ch.alignment == Alignment.ALLY
 									&& ch.invisible == 0) {
 								if (recentZaps.contains(ch.id())) {
-									ch.damage(Random.NormalIntRange(3, 6), new DM100.LightningBolt());
+									ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(3, 6), new DM100.LightningBolt());
 								} else {
-									ch.damage(Random.NormalIntRange(6, 12), new DM100.LightningBolt());
+									ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(6, 12), new DM100.LightningBolt());
 								}
 								curZaps.add(ch.id());
 								if (ch.sprite.visible || sprite.visible) {

@@ -223,9 +223,9 @@ public class YogDzewa extends Mob {
 
 					if (hit( this, ch, true )) {
 						if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
-							ch.damage(Random.NormalIntRange(30, 50), new Eye.DeathGaze());
+							ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(30, 50), new Eye.DeathGaze());
 						} else {
-							ch.damage(Random.NormalIntRange(20, 30), new Eye.DeathGaze());
+							ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(20, 30), new Eye.DeathGaze());
 						}
 						if (Dungeon.level.heroFOV[pos]) {
 							ch.sprite.flash();
@@ -389,10 +389,10 @@ public class YogDzewa extends Mob {
 	}
 
 	@Override
-	public void damage( int dmg, Object src ) {
+	public void damageBase( int dmg, Object src ) {
 
 		int preHP = HP;
-		super.damage( dmg, src );
+		super.damageBase( dmg, src );
 
 		if (phase == 0 || findFist() != null) return;
 
@@ -661,12 +661,12 @@ public class YogDzewa extends Mob {
 
 		@Override
 		public int damageRoll() {
-			return Random.NormalIntRange( 15, 25 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 25 );
 		}
 
 		@Override
 		public int drRoll() {
-			return super.drRoll() + Random.NormalIntRange(0, 4);
+			return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 4);
 		}
 
 	}

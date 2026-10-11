@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -159,6 +161,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 public class GameScene extends PixelScene {
+	private long mmoPendingSince;
 
 	static GameScene scene;
 
@@ -892,6 +895,14 @@ public class GameScene extends PixelScene {
 			water.offsetTo( 0, waterOfs );
 			waterOfs = water.offsetY(); //re-assign to account for auto adjust
 		}
+
+		if (MmoRules.scaled() && Actor.processing() && !Dungeon.hero.ready) {
+			if (mmoPendingSince == 0) mmoPendingSince = System.nanoTime();
+			else if (System.nanoTime()-mmoPendingSince > 10000000000L) {
+				if (Actor.recoverAnimation()) com.shatteredpixel.shatteredpixeldungeon.utils.GLog.w(Messages.get(MmoRules.class, "recovered"));
+				mmoPendingSince = System.nanoTime();
+			}
+		} else mmoPendingSince = 0;
 
 		if (!Actor.processing() && Dungeon.hero.isAlive()) {
 			if (actorThread == null || !actorThread.isAlive()) {

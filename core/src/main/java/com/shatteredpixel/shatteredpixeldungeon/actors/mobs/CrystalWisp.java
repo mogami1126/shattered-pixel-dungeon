@@ -75,7 +75,7 @@ public class CrystalWisp extends Mob{
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 5, 10 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 5, 10 );
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class CrystalWisp extends Mob{
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 5);
 	}
 
 	@Override
@@ -129,8 +129,8 @@ public class CrystalWisp extends Mob{
 		Char enemy = this.enemy;
 		if (hit( this, enemy, true )) {
 
-			int dmg = Random.NormalIntRange( 5, 10 );
-			enemy.damage( dmg, new LightBeam() );
+			int dmg = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 5, 10 );
+			com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.magic(this, enemy, dmg, new LightBeam());
 
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
 				Badges.validateDeathFromEnemyMagic();

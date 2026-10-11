@@ -349,7 +349,7 @@ public class WandOfWarding extends Wand {
 		public int drRoll() {
 			int dr = super.drRoll();
 			if (tier > 3){
-				return dr + Math.round(Random.NormalIntRange(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
+				return dr + Math.round(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
 			} else {
 				return dr;
 			}

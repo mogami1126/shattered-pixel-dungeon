@@ -125,7 +125,7 @@ public class CrystalSpire extends Mob {
 				Char ch = Actor.findChar(i);
 
 				if (ch != null && !(ch instanceof CrystalWisp || ch instanceof CrystalSpire)){
-					int dmg = Random.NormalIntRange(6, 15);
+					int dmg = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(6, 15);
 
 					//guardians are hit harder by the attack
 					if (ch instanceof CrystalGuardian) {
@@ -292,11 +292,11 @@ public class CrystalSpire extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (!(src instanceof Pickaxe) ){
 			dmg = 0;
 		}
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 	}
 
 	@Override

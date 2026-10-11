@@ -56,7 +56,7 @@ public class Scorpio extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 30, 40 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 30, 40 );
 	}
 	
 	@Override
@@ -66,7 +66,7 @@ public class Scorpio extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 16);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 16);
 	}
 	
 	@Override

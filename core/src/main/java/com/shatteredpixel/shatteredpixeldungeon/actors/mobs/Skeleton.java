@@ -64,7 +64,7 @@ public class Skeleton extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 2, 10 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 2, 10 );
 	}
 	
 	@Override
@@ -78,7 +78,7 @@ public class Skeleton extends Mob {
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
 			if (ch != null && ch.isAlive()) {
-				int damage = Math.round(Random.NormalIntRange(6, 12));
+				int damage = Math.round(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(6, 12));
 				damage = Math.round( damage * AscensionChallenge.statModifier(this));
 
 				//all sources of DR are 2x effective vs. bone explosion
@@ -102,8 +102,8 @@ public class Skeleton extends Mob {
 					ShieldOfLight.ShieldOfLightTracker shield = ch.buff(ShieldOfLight.ShieldOfLightTracker.class);
 					if (shield != null && shield.object == id()) {
 						int min = 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
-						damage -= Random.NormalIntRange(min, 2 * min);
-						damage -= Random.NormalIntRange(min, 2 * min); //apply twice
+						damage -= com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(min, 2 * min);
+						damage -= com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(min, 2 * min); //apply twice
 						damage = Math.max(damage, 0);
 					} else if (ch == Dungeon.hero
 							&& Dungeon.hero.heroClass != HeroClass.CLERIC
@@ -160,7 +160,7 @@ public class Skeleton extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 5);
 	}
 
 }

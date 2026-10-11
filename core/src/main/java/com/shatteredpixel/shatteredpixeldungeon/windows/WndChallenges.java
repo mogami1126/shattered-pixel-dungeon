@@ -20,6 +20,10 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.watabou.noosa.ui.Component;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -61,7 +65,8 @@ public class WndChallenges extends Window {
 
 		boxes = new ArrayList<>();
 
-		float pos = TTL_HEIGHT;
+		Component content = new Component();
+		float pos = 0;
 		for (int i=0; i < Challenges.NAME_IDS.length; i++) {
 
 			final String challenge = Challenges.NAME_IDS[i];
@@ -75,7 +80,7 @@ public class WndChallenges extends Window {
 			}
 			cb.setRect( 0, pos, WIDTH-16, BTN_HEIGHT );
 
-			add( cb );
+			content.add( cb );
 			boxes.add( cb );
 			
 			IconButton info = new IconButton(Icons.get(Icons.INFO)){
@@ -88,12 +93,20 @@ public class WndChallenges extends Window {
 				}
 			};
 			info.setRect(cb.right(), pos, 16, BTN_HEIGHT);
-			add(info);
+			content.add(info);
 			
 			pos = cb.bottom();
 		}
 
-		resize( WIDTH, (int)pos );
+		content.setSize(WIDTH, pos);
+		ScrollPane pane = new ScrollPane(content); add(pane);
+		int viewport = Math.min((int)pos, (int)PixelScene.uiCamera.height - 70);
+		RedButton preset = new RedButton(Messages.get(this, "mmo_preset")){
+			protected void onClick(){ for (int i=0;i<boxes.size();i++) boxes.get(i).checked((Challenges.MMO_PRESET & Challenges.MASKS[i]) != 0); }
+		};
+		preset.active = editable; preset.setRect(0, TTL_HEIGHT+viewport+2, WIDTH, 18); add(preset);
+		resize(WIDTH, TTL_HEIGHT+viewport+20);
+		pane.setRect(0, TTL_HEIGHT, WIDTH, viewport);
 	}
 
 	@Override

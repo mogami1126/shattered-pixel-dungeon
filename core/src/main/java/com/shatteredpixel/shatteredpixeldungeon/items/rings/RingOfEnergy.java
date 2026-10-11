@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.rings;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -62,7 +64,7 @@ public class RingOfEnergy extends Ring {
 	}
 	
 	public static float wandChargeMultiplier( Char target ){
-		float bonus = (float)Math.pow(1.175, getBuffedBonus(target, Energy.class));
+		float bonus = MmoRules.ringMultiplier(target, RingOfEnergy.class, 1.175, getBuffedBonus(target, Energy.class), 256);
 
 		if (target instanceof Hero && ((Hero) target).heroClass != HeroClass.CLERIC && ((Hero) target).hasTalent(Talent.LIGHT_READING)){
 			bonus *= 1f + (0.2f * ((Hero) target).pointsInTalent(Talent.LIGHT_READING)/3f);
@@ -72,7 +74,7 @@ public class RingOfEnergy extends Ring {
 	}
 
 	public static float artifactChargeMultiplier( Char target ){
-		float bonus = (float)Math.pow(1.175, getBuffedBonus(target, Energy.class));
+		float bonus = MmoRules.ringMultiplier(target, RingOfEnergy.class, 1.175, getBuffedBonus(target, Energy.class), 256);
 
 		if (target instanceof Hero && ((Hero) target).heroClass != HeroClass.ROGUE && ((Hero) target).hasTalent(Talent.LIGHT_CLOAK)){
 			bonus *= 1f + (0.2f * ((Hero) target).pointsInTalent(Talent.LIGHT_CLOAK)/3f);
@@ -82,7 +84,7 @@ public class RingOfEnergy extends Ring {
 	}
 
 	public static float armorChargeMultiplier( Char target ){
-		return (float)Math.pow(1.175, getBuffedBonus(target, Energy.class));
+		return MmoRules.ringMultiplier(target, RingOfEnergy.class, 1.175, getBuffedBonus(target, Energy.class), 256);
 	}
 	
 	public class Energy extends RingBuff {

@@ -192,12 +192,12 @@ public class Mimic extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (state == PASSIVE){
 			alignment = Alignment.ENEMY;
 			stopHiding();
 		}
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 	}
 
 	@Override
@@ -229,15 +229,15 @@ public class Mimic extends Mob {
 	@Override
 	public int damageRoll() {
 		if (alignment == Alignment.NEUTRAL){
-			return Random.NormalIntRange( 2 + 2*level, 2 + 2*level);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 2 + 2*level, 2 + 2*level);
 		} else {
-			return Random.NormalIntRange( 1 + level, 2 + 2*level);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1 + level, 2 + 2*level);
 		}
 	}
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 1 + level/2);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 1 + level/2);
 	}
 
 	@Override

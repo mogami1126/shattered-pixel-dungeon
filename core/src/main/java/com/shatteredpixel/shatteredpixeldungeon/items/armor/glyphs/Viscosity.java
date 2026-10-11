@@ -128,7 +128,9 @@ public class Viscosity extends Glyph {
 				//wait 1 turn before damaging if this is freshly applied
 				postpone(TICK);
 			}
-			this.damage += damage;
+			if (com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.scaled()) {
+				this.damage = (int)Math.min(1000000, Math.max(0, (double)this.damage + damage));
+			} else this.damage += damage;
 			if (target != null) target.needsIncomingDOTUpdate = true;
 		}
 		

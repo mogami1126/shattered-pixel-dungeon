@@ -75,9 +75,11 @@ public class SummoningTrap extends Trap {
 
 		for (Integer point : respawnPoints) {
 			Mob mob = Dungeon.level.createMob();
-			while (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point]){
+			int attempts = 0;
+			while (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point] && attempts++ < 32){
 				mob = Dungeon.level.createMob();
 			}
+			if (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point]) continue;
 			if (mob != null) {
 				if (mob.state != mob.PASSIVE) {
 					mob.state = mob.WANDERING;

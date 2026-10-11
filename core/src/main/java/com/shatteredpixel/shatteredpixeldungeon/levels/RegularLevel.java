@@ -438,6 +438,7 @@ public abstract class RegularLevel extends Level {
 			nItems += 2;
 		}
 		
+		if (Dungeon.isChallenged(Challenges.LOOT_PARADISE)) nItems *= 5;
 		for (int i=0; i < nItems; i++) {
 
 			Item toDrop = Generator.random();
@@ -502,6 +503,7 @@ public abstract class RegularLevel extends Level {
 			
 		}
 
+		if (Dungeon.isChallenged(Challenges.LOOT_PARADISE)) for (int i=0; i<2; i++) drop(new com.shatteredpixel.shatteredpixeldungeon.items.food.Food(), randomDropCell());
 		for (Item item : itemsToSpawn) {
 			int cell = randomDropCell();
 			if (item instanceof TrinketCatalyst){
@@ -801,7 +803,7 @@ public abstract class RegularLevel extends Level {
 						&& pos != exit()
 						&& heaps.get(pos) == null
 						&& room.canPlaceItem(cellToPoint(pos), this)
-						&& findMob(pos) == null) {
+						&& (Dungeon.isChallenged(Challenges.INFINITY_MOBS) || findMob(pos) == null)) {
 					
 					Trap t = traps.get(pos);
 					
@@ -816,6 +818,22 @@ public abstract class RegularLevel extends Level {
 					}
 				}
 			}
+		}
+		if (Dungeon.isChallenged(Challenges.INFINITY_MOBS) || Dungeon.isChallenged(Challenges.LOOT_PARADISE)) {
+			ArrayList<Integer> candidates = new ArrayList<>();
+			for (Room room : rooms) if (roomType.isInstance(room) && room != roomEntrance) {
+				for (Point p : room.itemPlaceablePoints(this)) {
+					int cell = pointToCell(p);
+					Heap heap = heaps.get(cell);
+					Trap t = traps.get(cell);
+					if (passable[cell] && !solid[cell] && cell != exit()
+							&& (heap == null || heap.type == Heap.Type.HEAP)
+							&& (Dungeon.isChallenged(Challenges.INFINITY_MOBS) || findMob(cell) == null)
+							&& !(t instanceof BurningTrap || t instanceof BlazingTrap || t instanceof ChillingTrap
+							|| t instanceof FrostTrap || t instanceof ExplosiveTrap || t instanceof DisintegrationTrap || t instanceof PitfallTrap)) candidates.add(cell);
+				}
+			}
+			if (!candidates.isEmpty()) return Random.element(candidates);
 		}
 		return -1;
 	}

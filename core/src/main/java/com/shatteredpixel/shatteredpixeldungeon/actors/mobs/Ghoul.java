@@ -63,7 +63,7 @@ public class Ghoul extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 16, 22 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 16, 22 );
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class Ghoul extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 4);
 	}
 
 	@Override

@@ -423,7 +423,7 @@ public class WndBlacksmith extends Window {
 			return item.isUpgradable()
 					&& item.isIdentified()
 					&& !item.cursed
-					&& item.level() < 2;
+					&& (com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH) || item.level() < 2);
 		}
 
 		@Override

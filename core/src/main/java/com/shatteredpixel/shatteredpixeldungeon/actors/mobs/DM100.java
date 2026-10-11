@@ -59,7 +59,7 @@ public class DM100 extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 2, 8 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 2, 8 );
 	}
 	
 	@Override
@@ -69,7 +69,7 @@ public class DM100 extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 4);
 	}
 
 	@Override
@@ -95,9 +95,9 @@ public class DM100 extends Mob {
 
 			Invisibility.dispel(this);
 			if (hit( this, enemy, true )) {
-				int dmg = Random.NormalIntRange(3, 10);
+				int dmg = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(3, 10);
 				dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
-				enemy.damage( dmg, new LightningBolt() );
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.magic(this, enemy, dmg, new LightningBolt());
 
 				if (enemy.sprite.visible) {
 					enemy.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);

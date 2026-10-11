@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.rings;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -58,7 +60,7 @@ public class RingOfHaste extends Ring {
 	}
 	
 	public static float speedMultiplier( Char target ){
-		return (float)Math.pow(1.15, getBuffedBonus(target, Haste.class));
+		return MmoRules.ringMultiplier(target, RingOfHaste.class, 1.15, getBuffedBonus(target, Haste.class), 256);
 	}
 	
 	public class Haste extends RingBuff {

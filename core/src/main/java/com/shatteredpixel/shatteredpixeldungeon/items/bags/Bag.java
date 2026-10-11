@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.bags;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -196,7 +198,7 @@ public class Bag extends Item implements Iterable<Item> {
 			return false;
 		}
 
-		if (items.contains(item) || item instanceof Bag || items.size() < capacity()){
+		if (items.contains(item) || item instanceof Bag || items.size() < capacity() || MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS)){
 			return true;
 		} else if (item.stackable) {
 			for (Item i : items) {

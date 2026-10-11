@@ -100,7 +100,7 @@ public class Tengu extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 6, 12 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 6, 12 );
 	}
 	
 	@Override
@@ -114,7 +114,7 @@ public class Tengu extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 5);
 	}
 
 	boolean loading = false;
@@ -129,7 +129,7 @@ public class Tengu extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (!Dungeon.level.mobs.contains(this)){
 			return;
 		}
@@ -141,7 +141,7 @@ public class Tengu extends Mob {
 		int curbracket = HP / hpBracket;
 
 		int beforeHitHP = HP;
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 
 		//cannot be hit through multiple brackets at a time
 		if (HP <= (curbracket-1)*hpBracket){
@@ -632,7 +632,7 @@ public class Tengu extends Mob {
 					if (PathFinder.distance[cell] < Integer.MAX_VALUE) {
 						Char ch = Actor.findChar(cell);
 						if (ch != null && !(ch instanceof Tengu)) {
-							int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
+							int dmg = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
 							dmg -= ch.drRoll();
 
 							if (dmg > 0) {

@@ -247,6 +247,21 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 	}
 	
+	/** Completes only an outstanding visual callback; never replays a completed attack. */
+	public synchronized boolean recoverAnimation() {
+		if (ch == null) return false;
+		if (motion != null) { onComplete(motion); place(ch.pos); return true; }
+		if (jumpTweener != null && jumpTweener.alive) {
+			jumpTweener.killAndErase(); jumpTweener = null; place(ch.pos);
+			Callback pending = jumpCallback; jumpCallback = null; if (pending != null) pending.call();
+			return true;
+		}
+		if (animCallback != null || curAnim == attack || curAnim == operate) {
+			Animation pending = curAnim; idle(); onComplete(pending); return true;
+		}
+		return false;
+	}
+
 	public void interruptMotion() {
 		if (motion != null) {
 			motion.stop(false);

@@ -305,12 +305,12 @@ public class PowerOfMany extends ArmorAbility {
 
 		@Override
 		public int damageRoll() {
-			return Random.NormalIntRange(5, 30); //+0 greatsword
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(5, 30); //+0 greatsword
 		}
 
 		@Override
 		public int drRoll() {
-			return super.drRoll() + Random.NormalIntRange(1, 5); //+0 plate
+			return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(1, 5); //+0 plate
 		}
 
 		@Override

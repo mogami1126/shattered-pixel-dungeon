@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -61,7 +63,8 @@ public class ScrollOfUpgrade extends InventoryScroll {
 	@Override
 	protected void onItemSelected( Item item ) {
 
-		GameScene.show(new WndUpgrade(this, item, identifiedByUse));
+		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.BATCH_UPGRADE)) MmoRules.upgradeMenu(this, item, identifiedByUse);
+		else GameScene.show(new WndUpgrade(this, item, identifiedByUse));
 
 	}
 

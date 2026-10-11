@@ -61,7 +61,7 @@ public class Warlock extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 12, 18 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 12, 18 );
 	}
 	
 	@Override
@@ -71,7 +71,7 @@ public class Warlock extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 8);
 	}
 	
 	@Override
@@ -114,10 +114,10 @@ public class Warlock extends Mob {
 				Sample.INSTANCE.play( Assets.Sounds.DEGRADE );
 			}
 			
-			int dmg = Random.NormalIntRange( 12, 18 );
+			int dmg = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 12, 18 );
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 
-			enemy.damage( dmg, new DarkBolt() );
+			com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.magic(this, enemy, dmg, new DarkBolt());
 			
 			if (enemy == Dungeon.hero && !enemy.isAlive()) {
 				Badges.validateDeathFromEnemyMagic();

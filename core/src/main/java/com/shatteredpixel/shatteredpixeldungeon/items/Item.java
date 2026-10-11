@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -82,6 +84,8 @@ public class Item implements Bundlable {
 	public boolean dropsDownHeap = false;
 	
 	private int level = 0;
+	public java.math.BigInteger mmoExtra = java.math.BigInteger.ZERO;
+	public java.math.BigInteger mmoLevel(){ return java.math.BigInteger.valueOf(level).add(mmoExtra); }
 
 	public boolean levelKnown = false;
 	
@@ -123,7 +127,7 @@ public class Item implements Bundlable {
 	}
 
 	public boolean doPickUp(Hero hero, int pos) {
-		if (collect( hero.belongings.backpack )) {
+		if (MmoRules.absorb(this, hero) || collect( hero.belongings.backpack )) {
 			
 			GameScene.pickUp( this, pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
@@ -393,7 +397,8 @@ public class Item implements Bundlable {
 	}
 
 	public Item level( int value ){
-		level = value;
+		level = MmoRules.growing(this) ? Math.min(20, value) : value;
+		mmoExtra = MmoRules.growing(this) && value > 20 ? java.math.BigInteger.valueOf(value-20) : java.math.BigInteger.ZERO;
 
 		updateQuickslot();
 
@@ -402,7 +407,8 @@ public class Item implements Bundlable {
 	
 	public Item upgrade() {
 		
-		this.level++;
+		if (MmoRules.growing(this) && level >= 20) mmoExtra = mmoExtra.add(java.math.BigInteger.ONE);
+		else this.level++;
 
 		updateQuickslot();
 		
@@ -419,7 +425,8 @@ public class Item implements Bundlable {
 	
 	public Item degrade() {
 		
-		this.level--;
+		if (mmoExtra.signum() > 0) mmoExtra = mmoExtra.subtract(java.math.BigInteger.ONE);
+		else this.level--;
 		
 		return this;
 	}
@@ -487,7 +494,7 @@ public class Item implements Bundlable {
 		String name = name();
 
 		if (visiblyUpgraded() != 0)
-			name = Messages.format( TXT_TO_STRING_LVL, name, visiblyUpgraded()  );
+			name = mmoExtra.signum() > 0 && levelKnown ? name + " +" + mmoLevel() : Messages.format( TXT_TO_STRING_LVL, name, visiblyUpgraded() );
 
 		if (quantity > 1)
 			name = Messages.format( TXT_TO_STRING_X, name, quantity );
@@ -590,6 +597,7 @@ public class Item implements Bundlable {
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
 		bundle.put( LEVEL, level );
+		bundle.put("mmo_extra", mmoExtra.toString());
 		bundle.put( LEVEL_KNOWN, levelKnown );
 		bundle.put( CURSED, cursed );
 		bundle.put( CURSED_KNOWN, cursedKnown );
@@ -613,6 +621,7 @@ public class Item implements Bundlable {
 			degrade( -level );
 		}
 		
+		mmoExtra = bundle.contains("mmo_extra") ? new java.math.BigInteger(bundle.getString("mmo_extra")) : java.math.BigInteger.ZERO;
 		cursed	= bundle.getBoolean( CURSED );
 
 		//only want to populate slots when restoring belongings

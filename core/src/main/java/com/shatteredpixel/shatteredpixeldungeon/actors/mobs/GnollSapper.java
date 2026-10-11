@@ -58,7 +58,7 @@ public class GnollSapper extends Mob {
 	public int spawnPos;
 	private int partnerID = -1;
 
-	private int abilityCooldown = Random.NormalIntRange(4, 6);
+	private int abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(4, 6);
 	private boolean lastAbilityWasRockfall = false;
 
 	public int throwingRockFromPos = -1;
@@ -97,7 +97,7 @@ public class GnollSapper extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 6 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1, 6 );
 	}
 
 	@Override
@@ -106,14 +106,14 @@ public class GnollSapper extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
-		super.damage(dmg, src);
+	public void damageBase( int dmg, Object src ) {
+		super.damageBase(dmg, src);
 		abilityCooldown -= dmg/10f;
 	}
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 6);
 	}
 
 	@Override
@@ -204,14 +204,14 @@ public class GnollSapper extends Mob {
 						}
 
 						Dungeon.hero.interrupt();
-						abilityCooldown = Random.NormalIntRange(4, 6);
+						abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(4, 6);
 						spend(delay);
 						return true;
 					} else if (GnollGeomancer.prepRockFallAttack(enemy, GnollSapper.this, 2, true)) {
 						lastAbilityWasRockfall = true;
 						Dungeon.hero.interrupt();
 						spend(GameMath.gate(TICK, (int)Math.ceil(enemy.cooldown()), 3*TICK));
-						abilityCooldown = Random.NormalIntRange(4, 6);
+						abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(4, 6);
 						return true;
 					}
 				}

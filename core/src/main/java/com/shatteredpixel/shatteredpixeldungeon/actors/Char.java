@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.actors;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -164,6 +166,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public abstract class Char extends Actor {
+	public String mmoHealth = "1.0:0", mmoAttack = "1.0:0";
+	public boolean mmoInitialized;
+	public com.shatteredpixel.shatteredpixeldungeon.mmo.GameNumber mmoRemainder = com.shatteredpixel.shatteredpixeldungeon.mmo.GameNumber.ZERO;
+	public double mmoHitCredit = 0.5;
 	
 	public int pos = 0;
 	
@@ -345,6 +351,9 @@ public abstract class Char extends Actor {
 		bundle.put( PREV_POS, previousPos );
 		bundle.put( TAG_HP, HP );
 		bundle.put( TAG_HT, HT );
+		bundle.put("mmo_health", mmoHealth); bundle.put("mmo_attack", mmoAttack);
+		bundle.put("mmo_initialized", mmoInitialized); bundle.put("mmo_remainder", mmoRemainder.encode());
+		bundle.put("mmo_hit_credit", Double.toString(mmoHitCredit));
 		bundle.put( BUFFS, buffs );
 	}
 	
@@ -357,6 +366,10 @@ public abstract class Char extends Actor {
 		previousPos = bundle.getInt( PREV_POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
+		if (bundle.contains("mmo_health")) { mmoHealth = bundle.getString("mmo_health"); mmoAttack = bundle.getString("mmo_attack"); }
+		mmoInitialized = bundle.getBoolean("mmo_initialized");
+		if (bundle.contains("mmo_remainder")) mmoRemainder = com.shatteredpixel.shatteredpixeldungeon.mmo.GameNumber.decode(bundle.getString("mmo_remainder"));
+		if (bundle.contains("mmo_hit_credit")) mmoHitCredit = Double.parseDouble(bundle.getString("mmo_hit_credit"));
 		
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
@@ -480,10 +493,10 @@ public abstract class Char extends Actor {
 				dmg *= 0.67f;
 			}
 
-			int effectiveDamage = enemy.defenseProc( this, Math.round(dmg) );
+			int effectiveDamage = MmoRules.defenseProc(enemy, this, MmoRules.scaled() ? MmoRules.physical(this, enemy, Math.round(dmg), dr) : Math.round(dmg));
 			//do not trigger on-hit logic if defenseProc returned a negative value
 			if (effectiveDamage >= 0) {
-				effectiveDamage = Math.max(effectiveDamage - dr, 0);
+				effectiveDamage = Math.max(effectiveDamage - (MmoRules.scaled() ? 0 : dr), 0);
 
 				if (enemy.buff(Viscosity.ViscosityTracker.class) != null) {
 					effectiveDamage = enemy.buff(Viscosity.ViscosityTracker.class).deferDamage(effectiveDamage);
@@ -495,7 +508,7 @@ public abstract class Char extends Actor {
 					effectiveDamage *= 1.33f;
 				}
 
-				effectiveDamage = attackProc(enemy, effectiveDamage);
+				effectiveDamage = MmoRules.attackProc(this, enemy, effectiveDamage);
 			}
 			if (visibleFight) {
 				if (effectiveDamage > 0 || !enemy.blockSound(Random.Float(0.96f, 1.05f))) {
@@ -509,7 +522,7 @@ public abstract class Char extends Actor {
 				return true;
 			}
 
-			enemy.damage( effectiveDamage, this );
+			enemy.damageBase( effectiveDamage, this );
 
 			if (buff(FireImbue.class) != null)  buff(FireImbue.class).proc(enemy);
 			if (buff(FrostImbue.class) != null) buff(FrostImbue.class).proc(enemy);
@@ -643,7 +656,7 @@ public abstract class Char extends Actor {
 			return true;
 		}
 
-		float acuRoll = Random.Float( acuStat );
+		float acuRoll = (MmoRules.scaled() || MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.BIOCHIP)) ? acuStat : Random.Float( acuStat );
 		if (attacker.buff(Bless.class) != null) acuRoll *= 1.25f;
 		if (attacker.buff(  Hex.class) != null) acuRoll *= 0.8f;
 		if (attacker.buff( Daze.class) != null) acuRoll *= 0.5f;
@@ -659,7 +672,7 @@ public abstract class Char extends Actor {
 		}
 		acuRoll *= accMulti;
 
-		float defRoll = Random.Float( defStat );
+		float defRoll = (MmoRules.scaled() || MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.BIOCHIP)) ? defStat : Random.Float( defStat );
 		if (defender.buff(Bless.class) != null) defRoll *= 1.25f;
 		if (defender.buff(  Hex.class) != null) defRoll *= 0.8f;
 		if (defender.buff( Daze.class) != null) defRoll *= 0.5f;
@@ -675,7 +688,7 @@ public abstract class Char extends Actor {
 		}
 		defRoll *= FerretTuft.evasionMultiplier();
 
-		if (acuRoll >= defRoll){
+		if ((MmoRules.scaled() || MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.BIOCHIP)) ? MmoRules.hit(attacker, defender, acuRoll, defRoll) : acuRoll >= defRoll){
 			hitMissIcon = FloatingText.getHitReasonIcon(attacker, acuRoll, defender, defRoll);
 			return true;
 		} else {
@@ -701,7 +714,7 @@ public abstract class Char extends Actor {
 	public int drRoll() {
 		int dr = 0;
 
-		dr += Random.NormalIntRange( 0 , Barkskin.currentLevel(this) );
+		dr += com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 0 , Barkskin.currentLevel(this) );
 
 		return dr;
 	}
@@ -730,7 +743,7 @@ public abstract class Char extends Actor {
 		ShieldOfLight.ShieldOfLightTracker shield = buff( ShieldOfLight.ShieldOfLightTracker.class);
 		if (shield != null && shield.object == enemy.id()){
 			int min = 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
-			damage -= Random.NormalIntRange(min, 2*min);
+			damage -= com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(min, 2*min);
 			damage = Math.max(damage, 0);
 		} else if (this == Dungeon.hero
 				&& Dungeon.hero.heroClass != HeroClass.CLERIC
@@ -827,7 +840,11 @@ public abstract class Char extends Actor {
 		return cachedIncomingDOT;
 	}
 	
-	public void damage( int dmg, Object src ) {
+	public final void damage(int dmg, Object src) {
+		damageBase(MmoRules.damage(this, dmg, src), src);
+	}
+
+	public void damageBase( int dmg, Object src ) {
 		
 		if (!isAlive() || dmg < 0) {
 			return;
@@ -945,7 +962,7 @@ public abstract class Char extends Actor {
 		if (AntiMagic.RESISTS.contains(src.getClass())){
 			dmg -= AntiMagic.drRoll(this, glyphLevel(AntiMagic.class));
 			if (buff(ArcaneArmor.class) != null) {
-				dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
+				dmg -= com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, buff(ArcaneArmor.class).level());
 			}
 			if (dmg < 0) dmg = 0;
 		}
@@ -1063,7 +1080,7 @@ public abstract class Char extends Actor {
 			}
 			hitMissIcon = -1;
 
-			sprite.showStatusWithIcon(CharSprite.NEGATIVE, Integer.toString(dmg + shielded), icon);
+			sprite.showStatusWithIcon(CharSprite.NEGATIVE, MmoRules.scaled() ? MmoRules.health(this).times(dmg + shielded).toString() : Integer.toString(dmg + shielded), icon);
 		}
 
 		if (HP < 0) HP = 0;

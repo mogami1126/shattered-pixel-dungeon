@@ -92,7 +92,7 @@ public class DM300 extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 15, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 25 );
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class DM300 extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 10);
 	}
 
 	public int pylonsActivated = 0;
@@ -113,7 +113,7 @@ public class DM300 extends Mob {
 	private final int MAX_COOLDOWN = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 7 : 9;
 
 	private int turnsSinceLastAbility = -1;
-	private int abilityCooldown = Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
+	private int abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(MIN_COOLDOWN, MAX_COOLDOWN);
 
 	private int lastAbility = 0;
 	private static final int NONE = 0;
@@ -259,7 +259,7 @@ public class DM300 extends Mob {
 						}
 
 						turnsSinceLastAbility = 0;
-						abilityCooldown = Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
+						abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(MIN_COOLDOWN, MAX_COOLDOWN);
 
 						if (lastAbility == GAS) {
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
@@ -473,13 +473,13 @@ public class DM300 extends Mob {
 	private boolean invulnWarned = false;
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (!BossHealthBar.isAssigned()){
 			notice();
 		}
 
 		int preHP = HP;
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 		if (isInvulnerable(src.getClass())){
 			return;
 		}
@@ -690,9 +690,9 @@ public class DM300 extends Mob {
 		public void affectChar(Char ch) {
 			if (!(ch instanceof DM300 || ch instanceof Pylon)){
 				if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
-					ch.damage(Random.NormalIntRange(10, 20), this);
+					ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 20), this);
 				} else {
-					ch.damage(Random.NormalIntRange(6, 12), this);
+					ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(6, 12), this);
 				}
 				if (ch.isAlive()) {
 					Buff.prolong(ch, Paralysis.class, Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 5 : 3);

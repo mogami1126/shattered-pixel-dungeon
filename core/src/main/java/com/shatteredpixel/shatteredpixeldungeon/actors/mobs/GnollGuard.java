@@ -74,9 +74,9 @@ public class GnollGuard extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (hasSapper()) dmg /= 4;
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 	}
 
 	@Override
@@ -94,9 +94,9 @@ public class GnollGuard extends Mob {
 	@Override
 	public int damageRoll() {
 		if (enemy != null && !Dungeon.level.adjacent(pos, enemy.pos)){
-			return Random.NormalIntRange( 16, 22 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 16, 22 );
 		} else {
-			return Random.NormalIntRange( 6, 12 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 6, 12 );
 		}
 	}
 
@@ -116,7 +116,7 @@ public class GnollGuard extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 6);
 	}
 
 	@Override

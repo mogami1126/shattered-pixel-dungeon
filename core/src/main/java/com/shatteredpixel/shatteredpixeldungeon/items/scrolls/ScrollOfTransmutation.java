@@ -250,6 +250,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			n.degrade( -level );
 		}
 		
+		n.mmoExtra = w.mmoExtra;
 		n.enchantment = w.enchantment;
 		n.curseInfusionBonus = w.curseInfusionBonus;
 		n.masteryPotionBonus = w.masteryPotionBonus;
@@ -285,6 +286,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			n.degrade( -level );
 		}
 		
+		n.mmoExtra = r.mmoExtra;
 		n.levelKnown = r.levelKnown;
 		n.cursedKnown = r.cursedKnown;
 		n.cursed = r.cursed;
@@ -343,6 +345,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		int level = w.trueLevel();
 		n.upgrade( level );
 
+		n.mmoExtra = w.mmoExtra;
 		n.levelKnown = w.levelKnown;
 		n.curChargeKnown = w.curChargeKnown;
 		n.cursedKnown = w.cursedKnown;

@@ -53,7 +53,7 @@ public class Monk extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 12, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 12, 25 );
 	}
 	
 	@Override
@@ -68,7 +68,7 @@ public class Monk extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 2);
 	}
 	
 	@Override

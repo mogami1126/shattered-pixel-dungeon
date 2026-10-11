@@ -92,7 +92,7 @@ public class DwarfKing extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 15, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 25 );
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class DwarfKing extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 10);
 	}
 
 	private int phase = 1;
@@ -160,7 +160,7 @@ public class DwarfKing extends Mob {
 
 			if (summonCooldown <= 0 && summonSubject(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2 : 3)){
 				summonsMade++;
-				summonCooldown += Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
+				summonCooldown += com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(MIN_COOLDOWN, MAX_COOLDOWN);
 			} else if (summonCooldown > 0){
 				summonCooldown--;
 			}
@@ -184,12 +184,12 @@ public class DwarfKing extends Mob {
 				}
 
 				if (lastAbility == LINK && lifeLinkSubject()){
-					abilityCooldown += Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
+					abilityCooldown += com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(MIN_COOLDOWN, MAX_COOLDOWN);
 					spend(TICK);
 					return true;
 				} else if (teleportSubject()) {
 					lastAbility = TELE;
-					abilityCooldown += Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
+					abilityCooldown += com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(MIN_COOLDOWN, MAX_COOLDOWN);
 					spend(TICK);
 					return true;
 				}
@@ -453,7 +453,7 @@ public class DwarfKing extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		//hero counts as unarmed if they aren't attacking with a weapon and aren't benefiting from force
 		if (src == Dungeon.hero && (!RingOfForce.fightingUnarmed(Dungeon.hero) || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
 			Statistics.qualifiedForBossChallengeBadge = false;
@@ -468,7 +468,7 @@ public class DwarfKing extends Mob {
 		}
 
 		if (isInvulnerable(src.getClass())){
-			super.damage(dmg, src);
+			super.damageBase(dmg, src);
 			return;
 		} else if (phase == 3 && !(src instanceof Viscosity.DeferedDamage)){
 			if (dmg >= 0) {
@@ -480,7 +480,7 @@ public class DwarfKing extends Mob {
 			return;
 		}
 		int preHP = HP;
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
 		if (lock != null && !isImmune(src.getClass()) && !isInvulnerable(src.getClass())){
@@ -705,7 +705,7 @@ public class DwarfKing extends Mob {
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
-					ch.damage(Random.NormalIntRange(20, 40), this);
+					ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(20, 40), this);
 					if (((DwarfKing)target).phase == 2){
 						if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 							target.damage(target.HT/18, new KingDamager());

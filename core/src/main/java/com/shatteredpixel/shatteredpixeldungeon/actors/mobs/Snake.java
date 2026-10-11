@@ -47,7 +47,7 @@ public class Snake extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1, 4 );
 	}
 	
 	@Override

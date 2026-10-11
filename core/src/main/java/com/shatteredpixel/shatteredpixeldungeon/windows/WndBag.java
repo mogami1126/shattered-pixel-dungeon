@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
@@ -82,6 +84,7 @@ public class WndBag extends WndTabbed {
 	protected int row;
 	
 	private static Bag lastBag;
+	private static int mmoPage;
 
 	public WndBag( Bag bag ) {
 		this(bag, null);
@@ -98,6 +101,11 @@ public class WndBag extends WndTabbed {
 		
 		this.selector = selector;
 		
+		if (lastBag != bag) mmoPage = 0;
+		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS)) {
+			int pages = Math.max(1, (int)Math.ceil(bag.items.stream().filter(i -> !(i instanceof Bag)).count()/18.0));
+			mmoPage = Math.min(mmoPage, pages-1);
+		}
 		lastBag = bag;
 
 		slotWidth = PixelScene.landscape() ? SLOT_WIDTH_L : SLOT_WIDTH_P;
@@ -124,6 +132,12 @@ public class WndBag extends WndTabbed {
 		placeTitle( bag, windowWidth );
 		
 		placeItems( bag );
+		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS)) {
+			int pages = Math.max(1, (int)Math.ceil(bag.items.stream().filter(i -> !(i instanceof Bag)).count()/18.0));
+			com.shatteredpixel.shatteredpixeldungeon.ui.RedButton prev = new com.shatteredpixel.shatteredpixeldungeon.ui.RedButton("<"){ protected void onClick(){ mmoPage = (mmoPage+pages-1)%pages; hide(); GameScene.show(new WndBag(bag, selector)); }};
+			com.shatteredpixel.shatteredpixeldungeon.ui.RedButton next = new com.shatteredpixel.shatteredpixeldungeon.ui.RedButton((mmoPage+1)+"/"+pages+" >"){ protected void onClick(){ mmoPage = (mmoPage+1)%pages; hide(); GameScene.show(new WndBag(bag, selector)); }};
+			prev.setRect(0, windowHeight+1, windowWidth/3f, 16); next.setRect(windowWidth/3f+1, windowHeight+1, windowWidth*2/3f-1, 16); add(prev); add(next); windowHeight += 18;
+		}
 
 		resize( windowWidth, windowHeight );
 
@@ -263,7 +277,9 @@ public class WndBag extends WndTabbed {
 		}
 
 		// Items in the bag, except other containers (they have tags at the bottom)
+		int mmoIndex = 0;
 		for (Item item : container.items.toArray(new Item[0])) {
+			if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS) && !(item instanceof Bag)) { int i = mmoIndex++; if (i < mmoPage*18 || i >= (mmoPage+1)*18) continue; }
 			if (!(item instanceof Bag)) {
 				placeItem( item );
 			} else {
@@ -272,7 +288,7 @@ public class WndBag extends WndTabbed {
 		}
 		
 		// Free Space
-		while ((count - equipped) < container.capacity()) {
+		while ((count - equipped) < (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS) ? 18 : container.capacity())) {
 			placeItem( null );
 		}
 	}

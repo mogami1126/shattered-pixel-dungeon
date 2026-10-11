@@ -87,7 +87,7 @@ public class GnollGeomancer extends Mob {
 		properties.add(Property.IMMOVABLE); //moves itself via ability, otherwise is static
 	}
 
-	private int abilityCooldown = Random.NormalIntRange(3, 5);
+	private int abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(3, 5);
 	private boolean lastAbilityWasRockfall;
 
 	private int[] throwingRocksFromPos = null;
@@ -149,7 +149,7 @@ public class GnollGeomancer extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 3, 6 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 3, 6 );
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class GnollGeomancer extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 6);
 	}
 
 	@Override
@@ -266,7 +266,7 @@ public class GnollGeomancer extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		int hpBracket = HT / 3;
 
 		int curbracket = HP / hpBracket;
@@ -274,7 +274,7 @@ public class GnollGeomancer extends Mob {
 
 		inFinalBracket = curbracket == 0;
 
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 
 		abilityCooldown -= dmg/10f;
 
@@ -632,14 +632,14 @@ public class GnollGeomancer extends Mob {
 						}
 
 						Dungeon.hero.interrupt();
-						abilityCooldown = Random.NormalIntRange(3, 5);
+						abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(3, 5);
 						spend(delay);
 						return true;
 					} else if (GnollGeomancer.prepRockFallAttack(enemy, GnollGeomancer.this, 6-2*curbracket, true)) {
 						lastAbilityWasRockfall = true;
 						Dungeon.hero.interrupt();
 						spend(GameMath.gate(TICK, (int)Math.ceil(enemy.cooldown()), 3*TICK));
-						abilityCooldown = Random.NormalIntRange(3, 5);
+						abilityCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(3, 5);
 						return true;
 					}
 				}
@@ -727,7 +727,7 @@ public class GnollGeomancer extends Mob {
 						}
 
 						if (ch != null && !(ch instanceof GnollGeomancer)){
-							ch.damage(Random.NormalIntRange(6, 12), new GnollGeomancer.Boulder());
+							ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(6, 12), new GnollGeomancer.Boulder());
 
 							if (ch == Dungeon.hero){
 								Statistics.questScores[2] -= 100;
@@ -837,7 +837,7 @@ public class GnollGeomancer extends Mob {
 
 		@Override
 		public void affectChar(Char ch) {
-			ch.damage(Random.NormalIntRange(6, 12), this);
+			ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(6, 12), this);
 			if (ch == Dungeon.hero){
 				Statistics.questScores[2] -= 100;
 			}

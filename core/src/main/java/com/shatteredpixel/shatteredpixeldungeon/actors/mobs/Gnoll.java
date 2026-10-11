@@ -43,7 +43,7 @@ public class Gnoll extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 6 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1, 6 );
 	}
 	
 	@Override
@@ -53,6 +53,6 @@ public class Gnoll extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 2);
 	}
 }

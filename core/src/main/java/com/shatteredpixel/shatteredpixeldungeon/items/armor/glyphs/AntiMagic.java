@@ -145,7 +145,7 @@ public class AntiMagic extends Armor.Glyph {
 		if (level == -1){
 			return 0;
 		} else {
-			return Random.NormalIntRange(
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(
 					Math.round(level * genericProcChanceMultiplier(owner)),
 					Math.round((3 + (level * 1.5f)) * genericProcChanceMultiplier(owner)));
 		}

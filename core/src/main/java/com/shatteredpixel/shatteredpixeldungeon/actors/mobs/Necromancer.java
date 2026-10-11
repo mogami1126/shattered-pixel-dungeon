@@ -95,7 +95,7 @@ public class Necromancer extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 5);
 	}
 	
 	@Override
@@ -229,7 +229,7 @@ public class Necromancer extends Mob {
 				//attempt to damage the blocker in addition to waiting
 				Char blocker = Actor.findChar(summoningPos);
 				if (blocker != null && blocker.alignment != alignment){
-					blocker.damage( Random.NormalIntRange(2, 10), new SummoningBlockDamage() );
+					blocker.damage( com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(2, 10), new SummoningBlockDamage() );
 					if (blocker == Dungeon.hero && !blocker.isAlive()){
 						Badges.validateDeathFromEnemyMagic();
 						Dungeon.fail(this);

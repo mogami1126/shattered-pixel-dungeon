@@ -38,8 +38,18 @@ public class Challenges {
 	public static final int STRONGER_BOSSES 	= 256;
 	public static final int INFINITY_MOBS		= 512;
 
-	public static final int MAX_VALUE           = 1023;
-	public static final int MAX_CHALS           = 10;
+	public static final int LOOT_PARADISE = 1024;
+public static final int BIOCHIP = 2048;
+public static final int MASS_LOOT = 4096;
+public static final int UNLIMITED_GROWTH = 8192;
+public static final int ABSORPTION = 16384;
+public static final int LARGE_BAGS = 32768;
+public static final int AUTO_PICKUP = 65536;
+public static final int BATCH_UPGRADE = 131072;
+public static final int MMO = 262144;
+	public static final int MMO_PRESET = INFINITY_MOBS | LOOT_PARADISE | BIOCHIP | MASS_LOOT | UNLIMITED_GROWTH | ABSORPTION | LARGE_BAGS | AUTO_PICKUP | BATCH_UPGRADE | MMO;
+	public static final int MAX_VALUE = 524287;
+	public static final int MAX_CHALS           = 19;
 
 	public static final String[] NAME_IDS = {
 			"champion_enemies",
@@ -51,11 +61,20 @@ public class Challenges {
 			"swarm_intelligence",
 			"darkness",
 			"no_scrolls",
-			"infinity_mobs"
+			"infinity_mobs",
+			"loot_paradise",
+			"biochip",
+			"mass_loot",
+			"unlimited_growth",
+			"absorption",
+			"large_bags",
+			"auto_pickup",
+			"batch_upgrade",
+			"mmo"
 	};
 
 	public static final int[] MASKS = {
-			CHAMPION_ENEMIES, STRONGER_BOSSES, NO_FOOD, NO_ARMOR, NO_HEALING, NO_HERBALISM, SWARM_INTELLIGENCE, DARKNESS, NO_SCROLLS, INFINITY_MOBS
+			CHAMPION_ENEMIES, STRONGER_BOSSES, NO_FOOD, NO_ARMOR, NO_HEALING, NO_HERBALISM, SWARM_INTELLIGENCE, DARKNESS, NO_SCROLLS, INFINITY_MOBS, LOOT_PARADISE, BIOCHIP, MASS_LOOT, UNLIMITED_GROWTH, ABSORPTION, LARGE_BAGS, AUTO_PICKUP, BATCH_UPGRADE, MMO
 	};
 
 	public static int activeChallenges(){

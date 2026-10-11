@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -936,7 +938,7 @@ public abstract class Mob extends Char {
 	}
 
 	@Override
-	public void damage( int dmg, Object src ) {
+	public void damageBase( int dmg, Object src ) {
 
 		if (!isInvulnerable(src.getClass())) {
 			if (state == SLEEPING) {
@@ -958,7 +960,7 @@ public abstract class Mob extends Char {
 			}
 		}
 		
-		super.damage( dmg, src );
+		super.damageBase( dmg, src );
 	}
 	
 	
@@ -985,7 +987,7 @@ public abstract class Mob extends Char {
 
 				AscensionChallenge.processEnemyKill(this);
 				
-				int exp = Dungeon.hero.lvl <= maxLvl ? EXP : 0;
+				int exp = MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH) ? EXP : Dungeon.hero.lvl <= maxLvl ? EXP : 0;
 
 				//during ascent, under-levelled enemies grant 10 xp each until level 30
 				// after this enemy kills which reduce the amulet curse still grant 10 effective xp
@@ -1093,8 +1095,10 @@ public abstract class Mob extends Char {
 		return lootChance * dropBonus;
 	}
 	
+	private boolean mmoLootRolled;
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + 2) return;
+		if (!mmoLootRolled) { mmoLootRolled = true; MmoRules.loot(this); }
+		if (!MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH) && Dungeon.hero.lvl > maxLvl + 2) return;
 
 		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
 		if (stolen == null || !stolen.itemWasStolen()) {
@@ -1188,7 +1192,7 @@ public abstract class Mob extends Char {
 	}
 
 	public String info(){
-		String desc = description();
+		String desc = description() + MmoRules.bio(this);
 
 		for (Buff b : buffs(ChampionEnemy.class)){
 			desc += "\n\n_" + Messages.titleCase(b.name()) + "_\n" + b.desc();

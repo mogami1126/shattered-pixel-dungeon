@@ -62,7 +62,7 @@ public class HoldFast extends Buff {
 					max = armor.tier + armor.buffedLvl();
 				}
 			}
-			int block = Random.NormalIntRange(((Hero) target).pointsInTalent(Talent.HOLD_FAST), 2*((Hero) target).pointsInTalent(Talent.HOLD_FAST));
+			int block = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(((Hero) target).pointsInTalent(Talent.HOLD_FAST), 2*((Hero) target).pointsInTalent(Talent.HOLD_FAST));
 			return Math.min(block, max);
 		} else {
 			detach();

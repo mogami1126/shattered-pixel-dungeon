@@ -44,7 +44,7 @@ public class Senior extends Monk {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 16, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 16, 25 );
 	}
 	
 }

@@ -151,9 +151,9 @@ public class PrismaticImage extends NPC {
 	@Override
 	public int damageRoll() {
 		if (hero != null) {
-			return Random.NormalIntRange( 2 + hero.lvl/4, 4 + hero.lvl/2 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 2 + hero.lvl/4, 4 + hero.lvl/2 );
 		} else {
-			return Random.NormalIntRange( 2, 4 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 2, 4 );
 		}
 	}
 	

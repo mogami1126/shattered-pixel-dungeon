@@ -58,7 +58,7 @@ public class Spinner extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange(10, 20);
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 20);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class Spinner extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 6);
 	}
 
 	private int webCoolDown = 0;

@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
@@ -122,6 +124,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public abstract class Level implements Bundlable {
+	public String mmoFloorHealth = "1.0:0", mmoFloorAttack = "1.0:0";
+	public String mmoFloorArmor = "0.0:0";
 	
 	public static enum Feeling {
 		NONE,
@@ -318,6 +322,7 @@ public abstract class Level implements Bundlable {
 		buildFlagMaps();
 		cleanWalls();
 		
+		MmoRules.floor(this);
 		createMobs();
 		createItems();
 
@@ -368,6 +373,8 @@ public abstract class Level implements Bundlable {
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
+		if (bundle.contains("mmo_floor_armor")) mmoFloorArmor = bundle.getString("mmo_floor_armor");
+		if (bundle.contains("mmo_floor_health")) { mmoFloorHealth = bundle.getString("mmo_floor_health"); mmoFloorAttack = bundle.getString("mmo_floor_attack"); }
 
 		version = bundle.getInt( VERSION );
 		
@@ -483,6 +490,8 @@ public abstract class Level implements Bundlable {
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
+		bundle.put("mmo_floor_armor", mmoFloorArmor);
+		bundle.put("mmo_floor_health", mmoFloorHealth); bundle.put("mmo_floor_attack", mmoFloorAttack);
 		bundle.put( VERSION, Game.versionCode );
 		bundle.put( WIDTH, width );
 		bundle.put( HEIGHT, height );

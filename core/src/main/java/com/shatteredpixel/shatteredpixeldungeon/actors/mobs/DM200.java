@@ -57,7 +57,7 @@ public class DM200 extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 10, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 10, 25 );
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class DM200 extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 8);
 	}
 
 	@Override

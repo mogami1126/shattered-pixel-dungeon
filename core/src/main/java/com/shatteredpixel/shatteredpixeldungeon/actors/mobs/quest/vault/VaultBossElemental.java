@@ -100,9 +100,9 @@ public class VaultBossElemental extends Mob {
 	public int damageRoll() {
 		//frost form does less melee damage, as you're meant to fight it up-close
 		if (form == ElementalForm.FROST){
-			return Random.NormalIntRange( 15, 20 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 20 );
 		} else {
-			return Random.NormalIntRange( 20, 25 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 20, 25 );
 		}
 	}
 
@@ -113,7 +113,7 @@ public class VaultBossElemental extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 10);
 	}
 
 	@Override
@@ -143,8 +143,8 @@ public class VaultBossElemental extends Mob {
 	private ElementalForm form = null; //only initially
 	private float[] formChances = new float[]{2, 2, 2}; //up to 2 uses of each form per fight
 
-	protected int envAttackCooldown = Random.NormalIntRange( 10, 15 );
-	protected int spAttackCooldown = Random.NormalIntRange( 6, 10 );
+	protected int envAttackCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 10, 15 );
+	protected int spAttackCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 6, 10 );
 	protected int spTargetCell = -1;
 
 	protected int lastEnemyPos = -1; //used for tracking targeting on some attacks
@@ -268,7 +268,7 @@ public class VaultBossElemental extends Mob {
 				}
 				//not an actual attack, do nothing
 				sprite.operate(enemy.pos);
-				envAttackCooldown = Random.NormalIntRange( 10, 15 );
+				envAttackCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 10, 15 );
 				//shock form gets faster abilities
 				if (form == ElementalForm.SHOCK){
 					envAttackCooldown = (int) (envAttackCooldown*0.67f);
@@ -308,7 +308,7 @@ public class VaultBossElemental extends Mob {
 			doLightningBolt(spTargetCell);
 		}
 
-		spAttackCooldown = Random.NormalIntRange( 6, 10 );
+		spAttackCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 6, 10 );
 		//shock form gets faster abilities
 		if (form == ElementalForm.SHOCK){
 			spAttackCooldown = (int) (spAttackCooldown*0.67f);
@@ -343,7 +343,7 @@ public class VaultBossElemental extends Mob {
 	private boolean weakAnnounced = false;
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		//fire form is resistant to magic and weak to thrown weapons
 		if (form == ElementalForm.FIRE){
 			if (AntiMagic.RESISTS.contains(src.getClass())){
@@ -399,7 +399,7 @@ public class VaultBossElemental extends Mob {
 		int curbracket = (int) Math.ceil(HP / (float)hpBracket);
 
 		int preHP = HP;
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 
 		int dmgTaken = preHP - HP;
 		if (dmgTaken > 0) {
@@ -458,7 +458,7 @@ public class VaultBossElemental extends Mob {
 
 		//damaged by these, but much less so than regular elementals
 		if (harmful){
-			damage( Random.NormalIntRange( 5, 10 ), buff );
+			damage( com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 5, 10 ), buff );
 			return false;
 		}
 
@@ -931,7 +931,7 @@ public class VaultBossElemental extends Mob {
 					CellEmitter.get(cell).burst(MagicMissile.WhiteParticle.FACTORY, 10);
 					Char ch = Actor.findChar(cell);
 					if (ch != null && !(ch instanceof VaultBossElemental) && ch.buff(FrostResist.class) == null){
-						ch.damage(Random.NormalIntRange(10, 15), new Frost());
+						ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 15), new Frost());
 						Buff.affect(ch, Frost.class, 5f);
 						Buff.affect(ch, FrostResist.class);
 						if (ch == Dungeon.hero){
@@ -1247,7 +1247,7 @@ public class VaultBossElemental extends Mob {
 		for (int c : affectedCells){
 			Char ch = Actor.findChar(c);
 			if (ch != null && !(ch instanceof VaultBossElemental) && ch.buff(ShockResist.class) == null){
-				ch.damage(Random.NormalIntRange(20, 30), new Electricity());
+				ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(20, 30), new Electricity());
 				Buff.prolong(ch, Paralysis.class, 1f);
 				Buff.affect(ch, ShockResist.class);
 				ch.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);
@@ -1427,7 +1427,7 @@ public class VaultBossElemental extends Mob {
 		}
 
 		private void shockChar(Char ch){
-			ch.damage(Random.NormalIntRange(10, 15), new Electricity());
+			ch.damage(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 15), new Electricity());
 			Buff.prolong(ch, Paralysis.class, 1f);
 			Buff.affect(ch, ShockResist.class);
 			ch.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);

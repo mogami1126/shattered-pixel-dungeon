@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -97,7 +99,7 @@ public class WndInfoItem extends Window {
 		IconTitle titlebar = new IconTitle( item );
 		titlebar.color( color );
 		
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock( item.info(), 6 );
+		RenderedTextBlock txtInfo = PixelScene.renderTextBlock( item.info() + MmoRules.itemInfo(item), 6 );
 		
 		layoutFields(titlebar, txtInfo);
 	}

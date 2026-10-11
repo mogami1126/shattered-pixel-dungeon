@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -195,6 +197,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 
 public class Hero extends Char {
+	public java.math.BigInteger mmoLevels = java.math.BigInteger.ZERO, mmoExp = java.math.BigInteger.ZERO;
+	public String mmoBestOutput = "1.0:0", mmoBestHealth = "1.0:0";
 
 	{
 		actPriority = HERO_PRIO;
@@ -318,6 +322,8 @@ public class Hero extends Char {
 		bundle.put( STRENGTH, STR );
 		
 		bundle.put( LEVEL, lvl );
+		bundle.put("mmo_levels", mmoLevels.toString()); bundle.put("mmo_exp", mmoExp.toString());
+		bundle.put("mmo_best_output", mmoBestOutput); bundle.put("mmo_best_health", mmoBestHealth);
 		bundle.put( EXPERIENCE, exp );
 		
 		bundle.put( HTBOOST, HTBoost );
@@ -329,6 +335,8 @@ public class Hero extends Char {
 	public void restoreFromBundle( Bundle bundle ) {
 
 		lvl = bundle.getInt( LEVEL );
+		if (bundle.contains("mmo_levels")) { mmoLevels = new java.math.BigInteger(bundle.getString("mmo_levels")); mmoExp = new java.math.BigInteger(bundle.getString("mmo_exp"));
+			mmoBestOutput = bundle.getString("mmo_best_output"); mmoBestHealth = bundle.getString("mmo_best_health"); }
 		exp = bundle.getInt( EXPERIENCE );
 
 		HTBoost = bundle.getInt(HTBOOST);
@@ -644,14 +652,14 @@ public class Hero extends Char {
 		int dr = super.drRoll();
 
 		if (belongings.armor() != null) {
-			int armDr = Random.NormalIntRange( belongings.armor().DRMin(), belongings.armor().DRMax());
+			int armDr = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( belongings.armor().DRMin(), belongings.armor().DRMax());
 			if (STR() < belongings.armor().STRReq()){
 				armDr -= 2*(belongings.armor().STRReq() - STR());
 			}
 			if (armDr > 0) dr += armDr;
 		}
 		if (belongings.weapon() != null && !RingOfForce.fightingUnarmed(this))  {
-			int wepDr = Random.NormalIntRange( 0 , belongings.weapon().defenseFactor( this ) );
+			int wepDr = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 0 , belongings.weapon().defenseFactor( this ) );
 			if (STR() < ((Weapon)belongings.weapon()).STRReq()){
 				wepDr -= 2*(((Weapon)belongings.weapon()).STRReq() - STR());
 			}
@@ -703,10 +711,11 @@ public class Hero extends Char {
 
 	//damage rolls that come from the hero can have their RNG influenced by clover
 	public static int heroDamageIntRange(int min, int max ){
+		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.BIOCHIP)) return min + (max-min)/2;
 		if (Random.Float() < ThirteenLeafClover.alterHeroDamageChance()){
 			return ThirteenLeafClover.alterDamageRoll(min, max);
 		} else {
-			return Random.NormalIntRange(min, max);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(min, max);
 		}
 	}
 	
@@ -1625,7 +1634,7 @@ public class Hero extends Char {
 	}
 
 	@Override
-	public void damage( int dmg, Object src ) {
+	public void damageBase( int dmg, Object src ) {
 		if (buff(TimekeepersHourglass.timeStasis.class) != null
 				|| buff(TimeStasis.class) != null) {
 			return;
@@ -1679,7 +1688,7 @@ public class Hero extends Char {
 
 		int preHP = HP + shielding();
 		if (src instanceof Hunger) preHP -= shielding();
-		super.damage( dmg, src );
+		super.damageBase( dmg, src );
 		int postHP = HP + shielding();
 		if (src instanceof Hunger) postHP -= shielding();
 		int effectiveDamage = preHP - postHP;
@@ -2008,12 +2017,17 @@ public class Hero extends Char {
 	}
 	
 	public void earnExp( int exp, Class source ) {
+		int originalExp = exp;
+		float mmoPercent = MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH) && lvl >= MAX_LEVEL ? (float)com.shatteredpixel.shatteredpixeldungeon.mmo.GameNumber.of(Math.max(0,exp)).divide(com.shatteredpixel.shatteredpixeldungeon.mmo.GameNumber.of(MmoRules.heroLevel(this).add(java.math.BigInteger.ONE).multiply(java.math.BigInteger.valueOf(5)))).bounded(1) : -1;
+		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH) && lvl >= MAX_LEVEL && source != AscensionChallenge.class) {
+			MmoRules.earn(this, exp); exp = 0;
+		}
 
 		//xp granted by ascension challenge is only for on-exp gain effects
 		if (source != AscensionChallenge.class) {
 			this.exp += exp;
 		}
-		float percent = exp/(float)maxExp();
+		float percent = mmoPercent >= 0 ? mmoPercent : originalExp/(float)maxExp();
 
 		EtherealChains.chainsRecharge chains = buff(EtherealChains.chainsRecharge.class);
 		if (chains != null) chains.gainExp(percent);
@@ -2075,6 +2089,8 @@ public class Hero extends Char {
 				attackSkill++;
 				defenseSkill++;
 
+			} else if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH)) {
+				MmoRules.earn(this, maxExp() + this.exp); this.exp = 0;
 			} else {
 				Buff.prolong(this, Bless.class, Bless.DURATION);
 				this.exp = 0;
@@ -2330,6 +2346,7 @@ public class Hero extends Char {
 		boolean wasHighGrass = Dungeon.level.map[step] == Terrain.HIGH_GRASS;
 
 		super.move( step, travelling);
+		MmoRules.pickup(this);
 		
 		if (!flying && travelling) {
 			if (Dungeon.level.water[pos]) {

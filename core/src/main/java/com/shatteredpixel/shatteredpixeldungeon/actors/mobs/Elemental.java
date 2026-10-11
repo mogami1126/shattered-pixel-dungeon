@@ -82,10 +82,10 @@ public abstract class Elemental extends Mob {
 	@Override
 	public int damageRoll() {
 		if (!summonedALly) {
-			return Random.NormalIntRange(20, 25);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(20, 25);
 		} else {
 			int regionScale = Math.max(2, (1 + Dungeon.scalingDepth()/5));
-			return Random.NormalIntRange(5*regionScale, 5 + 5*regionScale);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(5*regionScale, 5 + 5*regionScale);
 		}
 	}
 	
@@ -109,10 +109,10 @@ public abstract class Elemental extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 5);
 	}
 	
-	protected int rangedCooldown = Random.NormalIntRange( 3, 5 );
+	protected int rangedCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 3, 5 );
 	
 	@Override
 	protected boolean act() {
@@ -179,7 +179,7 @@ public abstract class Elemental extends Mob {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
 
-		rangedCooldown = Random.NormalIntRange( 3, 5 );
+		rangedCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 3, 5 );
 	}
 	
 	public void onZapComplete() {
@@ -190,7 +190,7 @@ public abstract class Elemental extends Mob {
 	@Override
 	public boolean add( Buff buff ) {
 		if (harmfulBuffs.contains( buff.getClass() )) {
-			damage( Random.NormalIntRange( HT/2, HT * 3/5 ), buff );
+			damage( com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( HT/2, HT * 3/5 ), buff );
 			return false;
 		} else {
 			return super.add( buff );
@@ -381,7 +381,7 @@ public abstract class Elemental extends Mob {
 			}
 
 			targetingPos = -1;
-			rangedCooldown = Random.NormalIntRange( 3, 5 );
+			rangedCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 3, 5 );
 		}
 
 		@Override
@@ -396,7 +396,7 @@ public abstract class Elemental extends Mob {
 		@Override
 		public int damageRoll() {
 			if (!summonedALly) {
-				return Random.NormalIntRange(10, 12);
+				return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 12);
 			} else {
 				return super.damageRoll();
 			}
@@ -581,7 +581,7 @@ public abstract class Elemental extends Mob {
 			//skips accuracy check, always hits
 			rangedProc( enemy );
 
-			rangedCooldown = Random.NormalIntRange( 3, 5 );
+			rangedCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 3, 5 );
 		}
 
 		@Override

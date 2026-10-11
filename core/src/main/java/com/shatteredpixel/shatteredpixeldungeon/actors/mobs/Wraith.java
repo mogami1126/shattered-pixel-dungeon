@@ -74,7 +74,7 @@ public class Wraith extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1 + level/2, 2 + level );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1 + level/2, 2 + level );
 	}
 	
 	@Override

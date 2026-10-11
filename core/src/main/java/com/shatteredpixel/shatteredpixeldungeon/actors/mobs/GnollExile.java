@@ -58,7 +58,7 @@ public class GnollExile extends Gnoll {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 10 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 1, 10 );
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class GnollExile extends Gnoll {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 1);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 1);
 	}
 
 	@Override

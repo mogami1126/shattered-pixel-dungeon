@@ -146,9 +146,9 @@ public abstract class YogFist extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		int preHP = HP;
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 		int dmgTaken = preHP - HP;
 
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
@@ -182,12 +182,12 @@ public abstract class YogFist extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 18, 36 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 18, 36 );
 	}
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 15);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 15);
 	}
 
 	{
@@ -323,7 +323,7 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		public void damage(int dmg, Object src) {
+		public void damageBase( int dmg, Object src ) {
 			int grassCells = 0;
 			for (int i : PathFinder.NEIGHBOURS9) {
 				if (Dungeon.level.map[pos+i] == Terrain.FURROWED_GRASS
@@ -338,7 +338,7 @@ public abstract class YogFist extends Mob {
 				return;
 			}
 
-			super.damage(dmg, src);
+			super.damageBase(dmg, src);
 		}
 
 		@Override
@@ -418,7 +418,7 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		public void damage(int dmg, Object src) {
+		public void damageBase( int dmg, Object src ) {
 			if (!isInvulnerable(src.getClass())
 					&& !(src instanceof Bleeding)
 					&& buff(Sickle.HarvestBleedTracker.class) == null){
@@ -435,7 +435,7 @@ public abstract class YogFist extends Mob {
 				b.set(dmg*.6f);
 				sprite.showStatus(CharSprite.WARNING, Messages.titleCase(b.name()) + " " + (int)b.level());
 			} else{
-				super.damage(dmg, src);
+				super.damageBase(dmg, src);
 			}
 		}
 
@@ -474,11 +474,11 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		public int damageRoll() {
-			return Random.NormalIntRange( 22, 44 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 22, 44 );
 		}
 
 		@Override
-		public void damage(int dmg, Object src) {
+		public void damageBase( int dmg, Object src ) {
 			if (!isInvulnerable(src.getClass()) && !(src instanceof Viscosity.DeferedDamage)){
 				dmg = Math.round( dmg * resist( src.getClass() ));
 				if (dmg >= 0) {
@@ -486,7 +486,7 @@ public abstract class YogFist extends Mob {
 					sprite.showStatus(CharSprite.WARNING, Messages.get(Viscosity.class, "deferred", dmg));
 				}
 			} else{
-				super.damage(dmg, src);
+				super.damageBase(dmg, src);
 			}
 		}
 
@@ -524,7 +524,7 @@ public abstract class YogFist extends Mob {
 			Char enemy = this.enemy;
 			if (hit( this, enemy, true )) {
 
-				enemy.damage( Random.NormalIntRange(10, 20), new LightBeam() );
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.magic(this, enemy, com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 20), new LightBeam());
 				Buff.prolong( enemy, Blindness.class, Blindness.DURATION/2f );
 
 				if (!enemy.isAlive() && enemy == Dungeon.hero) {
@@ -541,9 +541,9 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		public void damage(int dmg, Object src) {
+		public void damageBase( int dmg, Object src ) {
 			int beforeHP = HP;
-			super.damage(dmg, src);
+			super.damageBase(dmg, src);
 			if (isAlive() && beforeHP > HT/2 && HP <= HT/2){
 				HP = HT/2;
 				Buff.prolong( Dungeon.hero, Blindness.class, Blindness.DURATION*1.5f );
@@ -590,7 +590,7 @@ public abstract class YogFist extends Mob {
 			Char enemy = this.enemy;
 			if (hit( this, enemy, true )) {
 
-				enemy.damage( Random.NormalIntRange(10, 20), new DarkBolt() );
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.magic(this, enemy, com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 20), new DarkBolt());
 
 				Light l = enemy.buff(Light.class);
 				if (l != null){
@@ -611,9 +611,9 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		public void damage(int dmg, Object src) {
+		public void damageBase( int dmg, Object src ) {
 			int beforeHP = HP;
-			super.damage(dmg, src);
+			super.damageBase(dmg, src);
 			if (isAlive() && beforeHP > HT/2 && HP <= HT/2){
 				HP = HT/2;
 				Light l = Dungeon.hero.buff(Light.class);

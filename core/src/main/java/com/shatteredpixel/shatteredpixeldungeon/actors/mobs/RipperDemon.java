@@ -70,7 +70,7 @@ public class RipperDemon extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 15, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 25 );
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class RipperDemon extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 4);
 	}
 
 	private static final String LAST_ENEMY_POS = "last_enemy_pos";
@@ -142,7 +142,7 @@ public class RipperDemon extends Mob {
 
 			if (leapPos != -1){
 
-				leapCooldown = Random.NormalIntRange(2, 4);
+				leapCooldown = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(2, 4);
 
 				if (rooted){
 					leapPos = -1;

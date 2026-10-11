@@ -220,6 +220,7 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	public Item imbueWand(Wand wand, Char owner){
+		java.math.BigInteger mmoStaffBefore = mmoLevel(), mmoWandBefore = wand.mmoLevel();
 
 		int oldStaffcharges = this.wand != null ? this.wand.curCharges : 0;
 
@@ -248,6 +249,12 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand.trueLevel() >= this.trueLevel() && this.trueLevel() > 0) targetLevel++;
 		
 		level(targetLevel);
+		if (com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.growing(this)) {
+			java.math.BigInteger target = mmoStaffBefore.max(mmoWandBefore);
+			if (mmoWandBefore.compareTo(mmoStaffBefore) >= 0 && mmoStaffBefore.signum() > 0) target = target.add(java.math.BigInteger.ONE);
+			level(target.min(java.math.BigInteger.valueOf(20)).intValue());
+			mmoExtra = target.subtract(java.math.BigInteger.valueOf(trueLevel()));
+		}
 		this.wand = wand;
 		wand.levelKnown = wand.curChargeKnown = true;
 		updateWand(false);
@@ -298,6 +305,7 @@ public class MagesStaff extends MeleeWeapon {
 	public Class<?extends Wand> wandClass(){
 		return wand != null ? wand.getClass() : null;
 	}
+	public Wand mmoWand(){ return wand; }
 
 	@Override
 	public Item upgrade(boolean enchant) {
@@ -321,6 +329,7 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand != null) {
 			int curCharges = wand.curCharges;
 			wand.level(level());
+			wand.mmoExtra = mmoExtra;
 			//gives the wand one additional max charge
 			wand.maxCharges = Math.min(wand.maxCharges + 1, 10);
 			wand.curCharges = Math.min(curCharges + (levelled ? 1 : 0), wand.maxCharges);

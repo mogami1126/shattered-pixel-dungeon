@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.rings;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -58,7 +60,7 @@ public class RingOfArcana extends Ring {
 	}
 
 	public static float enchantPowerMultiplier(Char target ){
-		return (float)Math.pow(1.175f, getBuffedBonus(target, Arcana.class));
+		return MmoRules.ringMultiplier(target, RingOfArcana.class, 1.175, getBuffedBonus(target, Arcana.class), 64);
 	}
 
 	public class Arcana extends RingBuff {

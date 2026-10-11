@@ -64,12 +64,12 @@ public class RotLasher extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (src instanceof Burning) {
 			destroy();
 			sprite.die();
 		} else {
-			super.damage(dmg, src);
+			super.damageBase(dmg, src);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class RotLasher extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange(10, 20);
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(10, 20);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class RotLasher extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 8);
 	}
 	
 	{

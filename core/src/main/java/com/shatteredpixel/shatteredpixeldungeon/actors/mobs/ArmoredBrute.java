@@ -47,8 +47,8 @@ public class ArmoredBrute extends Brute {
 	@Override
 	public int damageRoll() {
 		return buff(ArmoredRage.class) != null ?
-				Random.NormalIntRange( 15, 40 ) :
-				Random.NormalIntRange( 5, 25 );
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 40 ) :
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 5, 25 );
 	}
 	
 	@Override

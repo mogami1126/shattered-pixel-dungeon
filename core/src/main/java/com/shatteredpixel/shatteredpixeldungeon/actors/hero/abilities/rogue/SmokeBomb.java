@@ -181,7 +181,7 @@ public class SmokeBomb extends ArmorAbility {
 		public int drRoll() {
 			int dr = super.drRoll();
 
-			dr += Random.NormalIntRange(Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT),
+			dr += com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT),
 					3*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT));
 
 			return dr;

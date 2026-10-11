@@ -74,9 +74,9 @@ public class Goo extends Mob {
 				Statistics.qualifiedForBossChallengeBadge = false;
 				Statistics.bossScores[0] -= 100;
 			}
-			return Random.NormalIntRange( min*3, max*3 );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( min*3, max*3 );
 		} else {
-			return Random.NormalIntRange( min, max );
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( min, max );
 		}
 	}
 
@@ -95,7 +95,7 @@ public class Goo extends Mob {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 2);
 	}
 
 	@Override
@@ -259,13 +259,13 @@ public class Goo extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public void damageBase( int dmg, Object src ) {
 		if (!BossHealthBar.isAssigned()){
 			BossHealthBar.assignBoss( this );
 			Dungeon.level.seal();
 		}
 		boolean bleeding = (HP*2 <= HT);
-		super.damage(dmg, src);
+		super.damageBase(dmg, src);
 		if ((HP*2 <= HT) && !bleeding){
 			BossHealthBar.bleed(true);
 			sprite.showStatus(CharSprite.WARNING, Messages.get(this, "enraged"));

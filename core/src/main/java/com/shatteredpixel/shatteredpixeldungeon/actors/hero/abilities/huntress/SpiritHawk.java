@@ -182,7 +182,7 @@ public class SpiritHawk extends ArmorAbility {
 
 		@Override
 		public int damageRoll() {
-			return Random.NormalIntRange(5, 10);
+			return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(5, 10);
 		}
 
 		@Override

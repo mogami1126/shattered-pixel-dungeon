@@ -57,8 +57,8 @@ public class Brute extends Mob {
 	@Override
 	public int damageRoll() {
 		return buff(BruteRage.class) != null ?
-				Random.NormalIntRange( 15, 40 ) :
-				Random.NormalIntRange( 5, 25 );
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 15, 40 ) :
+				com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 5, 25 );
 	}
 	
 	@Override
@@ -68,7 +68,7 @@ public class Brute extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 8);
 	}
 
 	@Override

@@ -91,7 +91,7 @@ public class CrystalGuardian extends Mob{
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 10, 16 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 10, 16 );
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class CrystalGuardian extends Mob{
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 10);
 	}
 
 	@Override

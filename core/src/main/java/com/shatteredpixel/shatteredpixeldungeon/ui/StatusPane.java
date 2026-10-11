@@ -20,6 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
+import com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -331,11 +333,11 @@ public class StatusPane extends Component {
 		Dot.scale.x = Math.min(DOTPercent, shieldHP.scale.x);
 		Dot.x = shieldHP.x + shieldHP.width() - Dot.width();
 
-		if (oldHP != health || oldShield != shield || oldMax != max){
+		if (MmoRules.scaled() || oldHP != health || oldShield != shield || oldMax != max){
 			if (shield <= 0) {
-				hpText.text(health + "/" + max);
+				hpText.text(MmoRules.scaled() ? MmoRules.health(Dungeon.hero).times(health)+"/"+MmoRules.health(Dungeon.hero).times(max) : health + "/" + max);
 			} else {
-				hpText.text(health + "+" + shield + "/" + max);
+				hpText.text(MmoRules.scaled() ? MmoRules.health(Dungeon.hero).times(health)+"+"+MmoRules.health(Dungeon.hero).times(shield)+"/"+MmoRules.health(Dungeon.hero).times(max) : health + "+" + shield + "/" + max);
 			}
 			oldHP = health;
 			oldShield = shield;
@@ -343,35 +345,35 @@ public class StatusPane extends Component {
 		}
 
 		if (large) {
-			exp.scale.x = (128 / exp.width) * Dungeon.hero.exp / Dungeon.hero.maxExp();
+			exp.scale.x = (128 / exp.width) * MmoRules.expFraction(Dungeon.hero);
 
 			hpText.measure();
 			hpText.x = hp.x + (128 - hpText.width())/2f;
 
-			expText.text(Dungeon.hero.exp + "/" + Dungeon.hero.maxExp());
+			expText.text(MmoRules.expText(Dungeon.hero));
 			expText.measure();
 			expText.x = hp.x + (128 - expText.width())/2f;
 
 		} else {
-			exp.scale.x = ((17 + heroPaneExtraWidth) / exp.width) * Dungeon.hero.exp / Dungeon.hero.maxExp();
-			expText.text(Dungeon.hero.exp + "/" + Dungeon.hero.maxExp());
+			exp.scale.x = ((17 + heroPaneExtraWidth) / exp.width) * MmoRules.expFraction(Dungeon.hero);
+			expText.text(MmoRules.expText(Dungeon.hero));
 		}
 
-		if (Dungeon.hero.lvl != lastLvl) {
+		if (MmoRules.scaled() || Dungeon.hero.lvl != lastLvl) {
 
-			if (lastLvl != -1) {
+			if (lastLvl != -1 && Dungeon.hero.lvl != lastLvl) {
 				showStarParticles();
 			}
 
 			lastLvl = Dungeon.hero.lvl;
 
 			if (large){
-				level.text( "lv. " + lastLvl );
+				level.text( "lv. " + MmoRules.heroLevel(Dungeon.hero) );
 				level.measure();
 				level.x = x + (30f - level.width()) / 2f;
 				level.y = y + 33f - level.baseLine() / 2f;
 			} else {
-				level.text( Integer.toString( lastLvl ) );
+				level.text( MmoRules.heroLevel(Dungeon.hero).toString() );
 				level.measure();
 				level.x = x + heroPaneExtraWidth + 25.5f - level.width() / 2f;
 				level.y = y + 31.0f - level.baseLine() / 2f;

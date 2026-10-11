@@ -72,7 +72,7 @@ public class ArmoredStatue extends Statue {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( armor.DRMin(), armor.DRMax());
 	}
 
 	//used in some glyph calculations

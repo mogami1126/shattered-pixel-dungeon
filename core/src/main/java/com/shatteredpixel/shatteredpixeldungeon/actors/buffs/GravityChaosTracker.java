@@ -61,7 +61,7 @@ public class GravityChaosTracker extends Buff {
 	}
 
 	//lasts an average of 100 turns, with high variance
-	public int left = Random.NormalIntRange(30, 70);
+	public int left = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(30, 70);
 
 	public boolean positiveOnly;
 

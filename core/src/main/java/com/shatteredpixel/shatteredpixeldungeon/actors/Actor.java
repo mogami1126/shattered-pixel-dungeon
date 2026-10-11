@@ -38,7 +38,7 @@ public abstract class Actor implements Bundlable {
 	
 	public static final float TICK	= 1f;
 
-	private float time;
+	private double time;
 
 	private int id = 0;
 
@@ -59,12 +59,9 @@ public abstract class Actor implements Bundlable {
 
 	//Always spends exactly the specified amount of time, regardless of time-influencing factors
 	protected void spendConstant( float time ){
+		if (!Float.isFinite(time)) time = time > 0 ? 1f : 0f;
+		if (this instanceof Char && time > 0) time = Math.max(time, 1f/256f);
 		this.time += time;
-		//if time is very close to a whole number, round to a whole number to fix errors
-		float ex = Math.abs(this.time % 1f);
-		if (ex < .001f){
-			this.time = Math.round(this.time);
-		}
 	}
 
 	//sends time, but the amount can be influenced
@@ -79,16 +76,11 @@ public abstract class Actor implements Bundlable {
 	protected void postpone( float time ) {
 		if (this.time < now + time) {
 			this.time = now + time;
-			//if time is very close to a whole number, round to a whole number to fix errors
-			float ex = Math.abs(this.time % 1f);
-			if (ex < .001f){
-				this.time = Math.round(this.time);
-			}
 		}
 	}
 	
 	public float cooldown() {
-		return time - now;
+		return (float)(time - now);
 	}
 
 	public void clearTime() {
@@ -122,13 +114,13 @@ public abstract class Actor implements Bundlable {
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
-		bundle.put( TIME, time );
+		bundle.put( TIME, Double.toString(time) );
 		bundle.put( ID, id );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
-		time = bundle.getFloat( TIME );
+		time = bundle.contains(TIME) ? Double.parseDouble(bundle.getString(TIME)) : 0;
 		int incomingID = bundle.getInt( ID );
 		if (Actor.findById(incomingID) == null){
 			id = incomingID;
@@ -156,10 +148,10 @@ public abstract class Actor implements Bundlable {
 	private static SparseArray<Actor> ids = new SparseArray<>();
 	private static int nextID = 1;
 
-	private static float now = 0;
+	private static double now = 0;
 	
 	public static float now(){
-		return now;
+		return (float)now;
 	}
 	
 	public static synchronized void clear() {
@@ -179,13 +171,13 @@ public abstract class Actor implements Bundlable {
 		float min = Float.MAX_VALUE;
 		for (Actor a : all) {
 			if (a.time < min) {
-				min = a.time;
+				min = (float)a.time;
 			}
 		}
 
 		//Only pull everything back by whole numbers
 		//So that turns always align with a whole number
-		min = (int)min;
+		min = (float)Math.floor(min);
 		for (Actor a : all) {
 			a.fixTime(min);
 		}
@@ -237,6 +229,11 @@ public abstract class Actor implements Bundlable {
 		}
 	}
 
+	public static boolean recoverAnimation(){
+		Actor pending = current;
+		return pending instanceof Char && ((Char)pending).sprite != null && ((Char)pending).sprite.recoverAnimation();
+	}
+
 	public static boolean processing(){
 		return current != null;
 	}
@@ -256,7 +253,7 @@ public abstract class Actor implements Bundlable {
 			
 			current = null;
 			if (!interrupted && !Game.switchingScene()) {
-				float earliest = Float.MAX_VALUE;
+				double earliest = Double.MAX_VALUE;
 
 				synchronized (Actor.class) {
 					for (Actor actor : all) {
@@ -283,7 +280,8 @@ public abstract class Actor implements Bundlable {
 					try {
 						synchronized (((Char)acting).sprite) {
 							if (((Char)acting).sprite.isMoving) {
-								((Char) acting).sprite.wait();
+								((Char) acting).sprite.wait(10000);
+								if (((Char)acting).sprite.isMoving) Game.runOnRenderThread(() -> ((Char)acting).sprite.recoverAnimation());
 							}
 						}
 					} catch (InterruptedException e) {
@@ -339,7 +337,7 @@ public abstract class Actor implements Bundlable {
 		add( actor, now + Math.max(delay, 0) );
 	}
 	
-	private static synchronized void add( Actor actor, float time ) {
+	private static synchronized void add( Actor actor, double time ) {
 		
 		if (all.contains( actor )) {
 			return;

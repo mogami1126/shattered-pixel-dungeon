@@ -58,7 +58,7 @@ public class FetidRat extends Rat {
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
+		return super.drRoll() + com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(0, 2);
 	}
 
 	@Override

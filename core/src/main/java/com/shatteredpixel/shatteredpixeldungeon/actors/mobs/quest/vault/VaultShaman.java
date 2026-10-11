@@ -82,7 +82,7 @@ public class VaultShaman extends Shaman {
 	@Override
 	public int damageRoll() {
 		//buff to melee damage, equal to a brute (no rage), as shamans are otherwise weak in melee
-		return Random.NormalIntRange( 5, 25 );
+		return com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range( 5, 25 );
 	}
 
 	@Override

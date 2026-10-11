@@ -346,7 +346,7 @@ public class WandOfRegrowth extends Wand {
 		@Override
 		public void activate( Char ch ) {
 
-			int nDrops = Random.NormalIntRange(3, 6);
+			int nDrops = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(3, 6);
 
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
@@ -386,7 +386,7 @@ public class WandOfRegrowth extends Wand {
 		@Override
 		public void activate( Char ch ) {
 
-			int nSeeds = Random.NormalIntRange(2, 4);
+			int nSeeds = com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.range(2, 4);
 
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
@@ -459,7 +459,7 @@ public class WandOfRegrowth extends Wand {
 		}
 
 		@Override
-		public void damage( int dmg, Object src ) {
+		public void damageBase( int dmg, Object src ) {
 			//do nothing
 		}
 
