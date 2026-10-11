@@ -284,6 +284,7 @@ public class Dungeon {
 		Badges.reset();
 		
 		GamesInProgress.selectedClass.initHero( hero );
+		com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.ensureCategoryBags();
 	}
 
 	public static boolean isChallenged( int mask ) {
@@ -820,6 +821,7 @@ public class Dungeon {
 
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
+		if (fullLoad) com.shatteredpixel.shatteredpixeldungeon.mmo.MmoRules.ensureCategoryBags();
 
 	}
 	

@@ -215,6 +215,23 @@ public class MmoRegression {
         TestTengu tengu=new TestTengu();tengu.sprite=new QuietSprite();tengu.mmoInitialized=true;tengu.mmoHealth=giant.encode();prison.mobs.add(tengu);
         for(int i=0;i<10 && prison.progressed==0;i++)tengu.damage(1000000,sword);
         check(prison.progressed==1 && tengu.HP==tengu.HT/2,"huge Tengu hits preserve the first phase transition");
+        Dungeon.hero=new Hero();Dungeon.hero.heroClass=HeroClass.WARRIOR;
+        Dungeon.challenges=0;
+        Dungeon.customSeedText="category-bag-regression"; // avoid rendering achievement popups in the headless fixture
+        MmoRules.ensureCategoryBags();
+        check(Dungeon.hero.belongings.getBags().size()==1,"native saves receive no extra bags");
+        com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch originalPouch=new com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch();originalPouch.collect();
+        Waterskin water=new Waterskin();water.collect();
+        com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart dart=new com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart();dart.collect();
+        Dungeon.challenges=Challenges.LARGE_BAGS;
+        MmoRules.ensureCategoryBags();
+        check(Dungeon.hero.belongings.getBags().size()==5,"large-bag saves receive all four category bags");
+        check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch.class)==originalPouch,"existing category bags preserved");
+        check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier.class).contains(water),"existing waterskin sorted into potion bag");
+        check(Dungeon.hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster.class).contains(dart) && dart.holster,"existing thrown weapon gains holster mechanics");
+        MmoRules.ensureCategoryBags();
+        check(Dungeon.hero.belongings.getBags().size()==5,"loading again does not duplicate bags");
+        check(Dungeon.LimitedDrops.SCROLL_HOLDER.dropped() && Dungeon.LimitedDrops.POTION_BANDOLIER.dropped() && Dungeon.LimitedDrops.MAGICAL_HOLSTER.dropped(),"shop bag flags match supplied bags");
         System.out.println("PASS: "+checks+" MMO regression checks");
     }
 }

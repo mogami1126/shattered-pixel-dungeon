@@ -7,7 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
@@ -26,6 +26,24 @@ public final class MmoRules {
     private MmoRules() {}
     private static final ThreadLocal<Char> procTarget = new ThreadLocal<>();
     public static boolean on(int flag) { return Dungeon.isChallenged(flag); }
+    /** Supply category bags once, including when an existing large-bag save is loaded. */
+    public static void ensureCategoryBags() {
+        if (!on(Challenges.LARGE_BAGS) || Dungeon.hero == null || Dungeon.hero.belongings.lostInventory()) return;
+        ensureCategoryBag(VelvetPouch.class, Dungeon.LimitedDrops.VELVET_POUCH);
+        ensureCategoryBag(ScrollHolder.class, Dungeon.LimitedDrops.SCROLL_HOLDER);
+        ensureCategoryBag(PotionBandolier.class, Dungeon.LimitedDrops.POTION_BANDOLIER);
+        ensureCategoryBag(MagicalHolster.class, Dungeon.LimitedDrops.MAGICAL_HOLSTER);
+    }
+    private static void ensureCategoryBag(Class<? extends Bag> type, Dungeon.LimitedDrops drop) {
+        for (Bag bag : Dungeon.hero.belongings.getBags()) {
+            if (type.isInstance(bag)) {
+                drop.drop();
+                return;
+            }
+        }
+        Bag bag = com.watabou.utils.Reflection.newInstance(type);
+        if (bag != null && bag.collect(Dungeon.hero.belongings.backpack)) drop.drop();
+    }
     public static boolean scaled() { return on(Challenges.UNLIMITED_GROWTH) || on(Challenges.MMO); }
     public static boolean growing(Item item) {
         return on(Challenges.UNLIMITED_GROWTH) && (item instanceof Weapon || item instanceof Armor || item instanceof Wand || item instanceof Ring);
