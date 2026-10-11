@@ -172,7 +172,9 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 			speed *= 1.5f;
 		}
 		
-		PosTweener tweener = new PosTweener( this, to, d.length() / speed );
+		boolean fast = com.shatteredpixel.shatteredpixeldungeon.SPDSettings.fastTurns()
+				&& com.shatteredpixel.shatteredpixeldungeon.actors.Actor.monsterAction();
+		PosTweener tweener = new PosTweener( this, to, fast ? 0.001f : d.length() / speed );
 		tweener.listener = this;
 		parent.add( tweener );
 	}
@@ -181,7 +183,9 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 	public void onComplete( Tweener tweener ) {
 		kill();
 		if (callback != null) {
-			callback.call();
+			Callback completing = callback;
+			callback = null;
+			completing.call();
 		}
 	}
 }

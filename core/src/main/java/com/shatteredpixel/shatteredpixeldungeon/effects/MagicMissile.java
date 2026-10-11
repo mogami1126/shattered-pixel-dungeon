@@ -54,6 +54,7 @@ public class MagicMissile extends Emitter {
 	private float sx;
 	private float sy;
 	private float time;
+	private boolean fastFlight;
 
 	//missile types
 	public static final int MAGIC_MISSILE   = 0;
@@ -115,6 +116,7 @@ public class MagicMissile extends Emitter {
 	}
 
 	public void reset( int type, PointF from, PointF to, Callback callback ) {
+		fastFlight = com.shatteredpixel.shatteredpixeldungeon.SPDSettings.fastTurns() && Actor.monsterAction();
 		this.callback = callback;
 		
 		this.to = to;
@@ -304,12 +306,14 @@ public class MagicMissile extends Emitter {
 	public void update() {
 		super.update();
 		if (on) {
-			float d = Game.elapsed;
+			float d = fastFlight ? Math.max(Game.elapsed, time) : Game.elapsed;
 			x += sx * d;
 			y += sy * d;
 			if ((time -= d) <= 0) {
 				on = false;
-				if (callback != null ) callback.call();
+				Callback completing = callback;
+				callback = null;
+				if (completing != null) completing.call();
 			}
 		}
 	}

@@ -61,6 +61,26 @@ import java.nio.Buffer;
 import java.util.HashSet;
 
 public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip.Listener {
+
+	public boolean fastTurns() {
+		return ch instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob
+				&& com.shatteredpixel.shatteredpixeldungeon.SPDSettings.fastTurns();
+	}
+
+	@Override
+	protected synchronized void updateAnimation() {
+		// Complete on the render thread, after act() has returned. Calling a combat
+		// callback from play() can lose the actor's wake-up and leave the turn waiting.
+		if (fastTurns() && curAnim != null && !curAnim.looped && !finished) {
+			curFrame = curAnim.frames.length - 1;
+			frame(curAnim.frames[curFrame]);
+			finished = true;
+			frameTimer = 0;
+			if (listener != null) listener.onComplete(curAnim);
+			return;
+		}
+		super.updateAnimation();
+	}
 	
 	// Color constants for floating text
 	public static final int DEFAULT		= 0xFFFFFF;
@@ -217,6 +237,13 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 	
 	public void move( int from, int to ) {
+		if (fastTurns()) {
+			turnTo(from, to);
+			place(to);
+			isMoving = false;
+			ch.onMotionComplete();
+			return;
+		}
 		turnTo( from , to );
 
 		play( run );
@@ -316,7 +343,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public void jump( int from, int to, float height, float duration,  Callback callback ) {
 		jumpCallback = callback;
 
-		jumpTweener = new JumpTweener( this, worldToCamera( to ), height, duration );
+		jumpTweener = new JumpTweener( this, worldToCamera( to ), height, fastTurns() ? 0.001f : duration );
 		jumpTweener.listener = this;
 		parent.add( jumpTweener );
 
@@ -834,7 +861,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				GameScene.ripple( ch.pos );
 			}
 			if (jumpCallback != null) {
-				jumpCallback.call();
+				Callback completing = jumpCallback;
+				jumpCallback = null;
+				completing.call();
 			}
 			GameScene.sortMobSprites();
 

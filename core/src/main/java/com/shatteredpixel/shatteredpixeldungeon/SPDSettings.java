@@ -48,6 +48,13 @@ public class SPDSettings extends GameSettings {
 	}
 	
 	//Display
+	public static boolean fastTurns() {
+		return getBoolean("fast_monster_turns", false);
+	}
+
+	public static void fastTurns(boolean value) {
+		put("fast_monster_turns", value);
+	}
 	
 	public static final String KEY_FULLSCREEN	= "fullscreen"; //used to hide navbars on mobile
 	public static final String KEY_LANDSCAPE	= "force_landscape";

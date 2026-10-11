@@ -221,6 +221,7 @@ public class WndSettings extends WndTabbed {
 		ColorBlock sep1;
 		CheckBox chkFullscreen;
 		CheckBox chkLandscape;
+		CheckBox chkFastTurns;
 		ColorBlock sep2;
 		OptionSlider optBrightness;
 		OptionSlider optVisGrid;
@@ -268,6 +269,15 @@ public class WndSettings extends WndTabbed {
 				chkLandscape.checked(SPDSettings.landscape());
 				add(chkLandscape);
 			}
+
+			chkFastTurns = new CheckBox(Messages.get(this, "fast_turns")) {
+				@Override protected void onClick() {
+					super.onClick();
+					SPDSettings.fastTurns(checked());
+				}
+			};
+			chkFastTurns.checked(SPDSettings.fastTurns());
+			add(chkFastTurns);
 
 			sep2 = new ColorBlock(1, 1, 0xFF000000);
 			add(sep2);
@@ -333,6 +343,8 @@ public class WndSettings extends WndTabbed {
 				bottom = chkLandscape.bottom();
 			}
 
+			chkFastTurns.setRect(0, bottom + GAP, width, BTN_HEIGHT);
+			bottom = chkFastTurns.bottom();
 			sep2.size(width, 1);
 			sep2.y = bottom + GAP;
 			bottom = sep2.y + 1;

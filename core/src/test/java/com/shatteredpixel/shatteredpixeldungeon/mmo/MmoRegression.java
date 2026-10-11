@@ -46,6 +46,19 @@ public class MmoRegression {
         public void idle(){}
         public void showAlert(){}
     }
+    private static class FastSprite extends QuietSprite {
+        public void frame(RectF frame){}
+        void start(Callback callback) {
+            animCallback=callback;
+            play(new com.watabou.noosa.MovieClip.Animation(1,false).frames(new RectF(),new RectF()));
+        }
+        void tick(){updateAnimation();}
+    }
+    private static class FastMob extends Mob {
+        int attacks;
+        public boolean attack(Char target,float damage,float bonus,float accuracy){attacks++;return true;}
+        boolean strike(Char target){return doAttack(target);}
+    }
     private static class PackedFloor extends SewerLevel {
         PackedFloor() {
             setSize(12,12);mobs=new HashSet<>();rooms=new ArrayList<>();heaps=new SparseArray<>();traps=new SparseArray<>();
@@ -279,6 +292,22 @@ public class MmoRegression {
         check(lower.levelKnown && lower.cursedKnown,"existing inventory gains level and curse information");
         Dungeon.challenges=0;Sword nativeUnknown=new Sword();MmoRules.absorb(nativeUnknown,Dungeon.hero);
         check(!nativeUnknown.levelKnown && !nativeUnknown.cursedKnown,"disabled absorption retains native identification");
+        check(!SPDSettings.fastTurns(),"fast turns default off");
+        SPDSettings.fastTurns(true);
+        FastMob fastMob=new FastMob();fastMob.sprite=new QuietSprite();fastMob.sprite.visible=true;
+        Target fastTarget=new Target();fastTarget.sprite=new QuietSprite();fastTarget.sprite.visible=true;
+        float beforeAttack=fastMob.cooldown();
+        check(fastMob.strike(fastTarget) && fastMob.attacks==1,"visible fast attack resolves once without waiting for animation");
+        check(fastMob.cooldown()-beforeAttack==fastMob.attackDelay(),"fast attack retains its turn cost");
+        int[] completions={0};FastSprite fastSprite=new FastSprite();fastSprite.ch=fastMob;
+        fastSprite.start(()->completions[0]++);
+        check(completions[0]==0,"fast callbacks do not run inside play");
+        fastSprite.tick();fastSprite.tick();
+        check(completions[0]==1,"fast render completion runs exactly once");
+        fastSprite.ch=Dungeon.hero;fastSprite.start(()->completions[0]++);fastSprite.tick();
+        check(completions[0]==1,"hero animation retains native timing");
+        SPDSettings.fastTurns(false);fastSprite.ch=fastMob;fastSprite.start(()->completions[0]++);fastSprite.tick();
+        check(completions[0]==1,"disabled fast mode retains monster animation timing");
         System.out.println("PASS: "+checks+" MMO regression checks");
     }
 }

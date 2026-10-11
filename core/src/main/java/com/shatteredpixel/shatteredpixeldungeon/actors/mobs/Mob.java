@@ -797,7 +797,8 @@ public abstract class Mob extends Char {
 	
 	protected boolean doAttack( Char enemy ) {
 		
-		if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
+		if (!com.shatteredpixel.shatteredpixeldungeon.SPDSettings.fastTurns()
+				&& sprite != null && (sprite.visible || enemy.sprite.visible)) {
 			sprite.attack( enemy.pos );
 			return false;
 			

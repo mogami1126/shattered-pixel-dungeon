@@ -238,6 +238,10 @@ public abstract class Actor implements Bundlable {
 		return current != null;
 	}
 
+	public static boolean monsterAction() {
+		return current instanceof Mob;
+	}
+
 	public static int curActorPriority() {
 		return current != null ? current.actPriority : HERO_PRIO;
 	}
