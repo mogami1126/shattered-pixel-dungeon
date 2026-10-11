@@ -84,7 +84,15 @@ public class WndBag extends WndTabbed {
 	protected int row;
 	
 	private static Bag lastBag;
-	private static int mmoPage;
+	private com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane largePane;
+	private com.watabou.noosa.ui.Component largeContent;
+	private java.util.ArrayList<BagSlot> largeSlots = new java.util.ArrayList<>();
+	private boolean largeBag;
+	private abstract class BagSlot extends InventorySlot {
+		boolean selectable;
+		BagSlot(Item item){super(item);}
+		void activate(){if(selectable)onClick();}
+	}
 
 	public WndBag( Bag bag ) {
 		this(bag, null);
@@ -101,18 +109,15 @@ public class WndBag extends WndTabbed {
 		
 		this.selector = selector;
 		
-		if (lastBag != bag) mmoPage = 0;
-		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS)) {
-			int pages = Math.max(1, (int)Math.ceil(bag.items.stream().filter(i -> !(i instanceof Bag)).count()/18.0));
-			mmoPage = Math.min(mmoPage, pages-1);
-		}
+		largeBag = MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS);
 		lastBag = bag;
 
 		slotWidth = PixelScene.landscape() ? SLOT_WIDTH_L : SLOT_WIDTH_P;
 		slotHeight = PixelScene.landscape() ? SLOT_HEIGHT_L : SLOT_HEIGHT_P;
 
 		nCols = PixelScene.landscape() ? COLS_L : COLS_P;
-		nRows = (int)Math.ceil(25/(float)nCols); //we expect to lay out 25 slots in all cases
+		nRows = (int)Math.ceil(25/(float)nCols); //native inventory layout
+		if(largeBag){nCols=7;slotWidth=19;slotHeight=20;nRows=11;}
 
 		int windowWidth = slotWidth * nCols + SLOT_MARGIN * (nCols - 1);
 		int windowHeight = TITLE_HEIGHT + slotHeight * nRows + SLOT_MARGIN * (nRows - 1);
@@ -131,15 +136,23 @@ public class WndBag extends WndTabbed {
 
 		placeTitle( bag, windowWidth );
 		
-		placeItems( bag );
-		if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS)) {
-			int pages = Math.max(1, (int)Math.ceil(bag.items.stream().filter(i -> !(i instanceof Bag)).count()/18.0));
-			com.shatteredpixel.shatteredpixeldungeon.ui.RedButton prev = new com.shatteredpixel.shatteredpixeldungeon.ui.RedButton("<"){ protected void onClick(){ mmoPage = (mmoPage+pages-1)%pages; hide(); GameScene.show(new WndBag(bag, selector)); }};
-			com.shatteredpixel.shatteredpixeldungeon.ui.RedButton next = new com.shatteredpixel.shatteredpixeldungeon.ui.RedButton((mmoPage+1)+"/"+pages+" >"){ protected void onClick(){ mmoPage = (mmoPage+1)%pages; hide(); GameScene.show(new WndBag(bag, selector)); }};
-			prev.setRect(0, windowHeight+1, windowWidth/3f, 16); next.setRect(windowWidth/3f+1, windowHeight+1, windowWidth*2/3f-1, 16); add(prev); add(next); windowHeight += 18;
+		if(largeBag){
+			largeContent=new com.watabou.noosa.ui.Component();
+			largePane=new com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane(largeContent){
+				public void onClick(float x,float y){
+					for(BagSlot slot:largeSlots)if(slot.inside(x,y)){slot.activate();break;}
+				}
+			};
+			add(largePane);
 		}
-
+		placeItems( bag );
+		if(largeBag){
+			int contentHeight=(int)Math.ceil(largeSlots.size()/(double)nCols)*(slotHeight+SLOT_MARGIN)-SLOT_MARGIN;
+			largeContent.setSize(windowWidth,contentHeight);
+			windowHeight=TITLE_HEIGHT+Math.min(contentHeight,(int)PixelScene.uiCamera.height-55);
+		}
 		resize( windowWidth, windowHeight );
+		if(largeBag)largePane.setRect(0,TITLE_HEIGHT,windowWidth,windowHeight-TITLE_HEIGHT);
 
 		int i = 1;
 		for (Bag b : Dungeon.hero.belongings.getBags()) {
@@ -277,9 +290,7 @@ public class WndBag extends WndTabbed {
 		}
 
 		// Items in the bag, except other containers (they have tags at the bottom)
-		int mmoIndex = 0;
 		for (Item item : container.items.toArray(new Item[0])) {
-			if (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS) && !(item instanceof Bag)) { int i = mmoIndex++; if (i < mmoPage*18 || i >= (mmoPage+1)*18) continue; }
 			if (!(item instanceof Bag)) {
 				placeItem( item );
 			} else {
@@ -288,7 +299,7 @@ public class WndBag extends WndTabbed {
 		}
 		
 		// Free Space
-		while ((count - equipped) < (MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.LARGE_BAGS) ? 18 : container.capacity())) {
+		while ((count - equipped) < (largeBag ? 70 : container.capacity())) {
 			placeItem( null );
 		}
 	}
@@ -298,9 +309,9 @@ public class WndBag extends WndTabbed {
 		count++;
 		
 		int x = col * (slotWidth + SLOT_MARGIN);
-		int y = TITLE_HEIGHT + row * (slotHeight + SLOT_MARGIN);
+		int y = (largeBag ? 0 : TITLE_HEIGHT) + row * (slotHeight + SLOT_MARGIN);
 
-		InventorySlot slot = new InventorySlot( item ){
+		BagSlot slot = new BagSlot( item ){
 			@Override
 			protected void onClick() {
 				if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)){
@@ -365,8 +376,9 @@ public class WndBag extends WndTabbed {
 				}
 			}
 		};
+		if(largeBag){largeContent.add(slot);largeSlots.add(slot);}else add(slot);
 		slot.setRect( x, y, slotWidth, slotHeight );
-		add(slot);
+		slot.selectable=item!=null && (selector==null || selector.itemSelectable(item));
 
 		if (item == null || (selector != null && !selector.itemSelectable(item))){
 			slot.enable(false);
@@ -377,6 +389,12 @@ public class WndBag extends WndTabbed {
 			row++;
 		}
 
+	}
+
+	@Override
+	public void offset(int x,int y){
+		super.offset(x,y);
+		if(largePane!=null)largePane.setRect(largePane.left(),largePane.top(),largePane.width(),largePane.height());
 	}
 
 	@Override

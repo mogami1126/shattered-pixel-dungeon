@@ -99,7 +99,15 @@ public class WndChallenges extends Window {
 		}
 
 		content.setSize(WIDTH, pos);
-		ScrollPane pane = new ScrollPane(content); add(pane);
+		ScrollPane pane = new ScrollPane(content){
+			public void onClick(float x,float y){
+				int index=(int)(y/(BTN_HEIGHT+GAP));
+				if(index<0 || index>=boxes.size() || y-index*(BTN_HEIGHT+GAP)>=BTN_HEIGHT)return;
+				if(x>=WIDTH-16){
+					ShatteredPixelDungeon.scene().addToFront(new WndMessage(Messages.get(Challenges.class,Challenges.NAME_IDS[index]+"_desc")));
+				}else if(editable && x>=0){CheckBox box=boxes.get(index);box.checked(!box.checked());}
+			}
+		}; add(pane);
 		int viewport = Math.min((int)pos, (int)PixelScene.uiCamera.height - 70);
 		RedButton preset = new RedButton(Messages.get(this, "mmo_preset")){
 			protected void onClick(){ for (int i=0;i<boxes.size();i++) boxes.get(i).checked((Challenges.MMO_PRESET & Challenges.MASKS[i]) != 0); }
