@@ -52,6 +52,8 @@ import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PointF;
+import com.watabou.utils.PlatformSupport;
+import com.watabou.utils.RectF;
 
 public class WndBag extends WndTabbed {
 	
@@ -117,7 +119,15 @@ public class WndBag extends WndTabbed {
 
 		nCols = PixelScene.landscape() ? COLS_L : COLS_P;
 		nRows = (int)Math.ceil(25/(float)nCols); //native inventory layout
-		if(largeBag){nCols=7;slotWidth=19;slotHeight=20;nRows=11;}
+		RectF safeInsets = Game.platform.getSafeInsets(PlatformSupport.INSET_ALL);
+		int safeWidth = (int)((Game.width-safeInsets.left-safeInsets.right)/PixelScene.defaultZoom);
+		int safeHeight = (int)((Game.height-safeInsets.top-safeInsets.bottom)/PixelScene.defaultZoom);
+		if(largeBag){
+			slotWidth=19;slotHeight=20;
+			// Fit whole columns; the inventory remains one continuous scrolling list.
+			nCols=Math.max(1,Math.min(7,(safeWidth-chrome.marginHor()-4+SLOT_MARGIN)/(slotWidth+SLOT_MARGIN)));
+			nRows=(int)Math.ceil(75/(float)nCols);
+		}
 
 		int windowWidth = slotWidth * nCols + SLOT_MARGIN * (nCols - 1);
 		int windowHeight = TITLE_HEIGHT + slotHeight * nRows + SLOT_MARGIN * (nRows - 1);
@@ -149,7 +159,8 @@ public class WndBag extends WndTabbed {
 		if(largeBag){
 			int contentHeight=(int)Math.ceil(largeSlots.size()/(double)nCols)*(slotHeight+SLOT_MARGIN)-SLOT_MARGIN;
 			largeContent.setSize(windowWidth,contentHeight);
-			windowHeight=TITLE_HEIGHT+Math.min(contentHeight,(int)PixelScene.uiCamera.height-55);
+			windowHeight=TITLE_HEIGHT+Math.min(contentHeight,
+					Math.max(slotHeight,safeHeight-chrome.marginTop()-tabHeight()-TITLE_HEIGHT-4));
 		}
 		resize( windowWidth, windowHeight );
 		if(largeBag)largePane.setRect(0,TITLE_HEIGHT,windowWidth,windowHeight-TITLE_HEIGHT);
@@ -393,8 +404,19 @@ public class WndBag extends WndTabbed {
 
 	@Override
 	public void offset(int x,int y){
-		super.offset(x,y);
+		super.offset(largeBag?0:x,largeBag?0:y);
 		if(largePane!=null)largePane.setRect(largePane.left(),largePane.top(),largePane.width(),largePane.height());
+	}
+
+	@Override
+	public void resize(int w,int h){
+		super.resize(w,h);
+		if(largeBag){
+			RectF insets=Game.platform.getSafeInsets(PlatformSupport.INSET_ALL);
+			camera.x=(int)(insets.left+(Game.width-insets.left-insets.right-camera.screenWidth())/2);
+			camera.y=(int)(insets.top+(Game.height-insets.top-insets.bottom-camera.screenHeight())/2);
+			shadow.boxRect(camera.x/camera.zoom,camera.y/camera.zoom,chrome.width(),chrome.height());
+		}
 	}
 
 	@Override

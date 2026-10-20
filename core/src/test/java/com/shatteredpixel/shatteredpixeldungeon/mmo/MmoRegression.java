@@ -76,6 +76,10 @@ public class MmoRegression {
         boolean died;
         public void die(Object cause){died=true;}
     }
+    private static class MortalRat extends Rat {
+        boolean died;
+        public void die(Object cause){died=true;}
+    }
     private static class TestPrison extends PrisonBossLevel {
         int progressed;
         public void progress(){progressed++;}
@@ -336,6 +340,92 @@ public class MmoRegression {
         try {collector.pickUpAutomatically(new Item(){public boolean doPickUp(Hero user,int pos){throw new IllegalStateException("fixture");}},12);} catch(IllegalStateException expected){}
         collector.spendAndNext(1);
         check(collector.cooldown()==beforePickup+1,"pickup scope clears even after a hook throws");
+        setup(args[0]);
+        // Manual recovery must not depend on the densely populated challenge.
+        Dungeon.challenges=Challenges.UNLIMITED_GROWTH;
+        Hero forger=Dungeon.hero;
+        Sword receiver=new Sword();receiver.level(9);forger.belongings.weapon=receiver;
+        Dagger donor=new Dagger();donor.level(2);forger.belongings.backpack.items.add(donor);
+        check(MmoForge.coefficient(receiver,donor)==90,"same category is exactly 0.9");
+        Sword sameName=new Sword();sameName.level(2);
+        check(MmoForge.coefficient(receiver,sameName)==90,"manual recovery has no same-name exemption");
+        PlateArmor plate=new PlateArmor();plate.level(2);
+        ClothArmor cloth=new ClothArmor();cloth.level(2);
+        check(MmoForge.units(receiver,plate).equals(MmoForge.units(receiver,cloth)),"native tier has no recovery bonus");
+        com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile wand=new com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile();
+        check(MmoForge.coefficient(receiver,wand)==81 && MmoForge.coefficient(wand,receiver)==81,"different category is 0.81 in both directions, without group classification");
+        com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife knife=new com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife();
+        check(MmoForge.coefficient(receiver,knife)==0 && MmoForge.units(receiver,knife).signum()==0,"throwing weapons cannot be recovered");
+        check(!MmoForge.target(knife) && MmoForge.units(knife,donor).signum()==0,"throwing weapons have no recovery target action");
+        com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll.initLabels();
+        com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion.initColors();
+        com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade upgradeScroll=new com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade();
+        com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing potion=new com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing();
+        check(MmoForge.units(receiver,upgradeScroll).equals(MmoForge.UNIT) && MmoForge.units(receiver,potion).equals(MmoForge.UNIT),"all potions and scrolls grant exactly one level");
+        LinkedHashMap<Item,Integer> selection=new LinkedHashMap<>();selection.put(donor,1);
+        check(MmoForge.apply(forger,receiver,selection),"recovery works without Omnipresent or MMO enemy growth");
+        check(receiver.mmoLevel().equals(BigInteger.valueOf(12)),"+9 plus +2 same-category material rounds 2.7 to 3 levels");
+        check(!forger.belongings.backpack.contains(donor) && !MmoForge.apply(forger,receiver,selection),"consumed material cannot be used twice");
+        potion.quantity(10);forger.belongings.backpack.items.add(potion);
+        selection.clear();selection.put(potion,5);
+        check(MmoForge.apply(forger,receiver,selection) && potion.quantity()==5 && receiver.mmoLevel().equals(BigInteger.valueOf(17)),"partial stack adds each unit and consumes only requested quantity");
+        selection.clear();selection.put(potion,6);
+        check(!MmoForge.apply(forger,receiver,selection) && potion.quantity()==5,"invalid batch leaves all quantities unchanged");
+        Bundle forgedSave=new Bundle();receiver.storeInBundle(forgedSave);
+        check(!forgedSave.contains("mmo_forge_units"),"no fractional recovery credit is saved");
+        selection.clear();selection.put(plate,1);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.valueOf(2)),"different-category 2.43 rounds down to 2");
+        selection.clear();selection.put(donor,1);selection.put(sameName,1);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.valueOf(5)),"round the combined batch rather than each material individually");
+        plate.level(49);selection.clear();selection.put(plate,1);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.valueOf(41)),"exact half-level 40.5 rounds up without floating point error");
+        com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass.Seed seed=new com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass.Seed();
+        com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlink stone=new com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlink();
+        check(MmoForge.units(receiver,seed).multiply(BigInteger.valueOf(3)).equals(MmoForge.UNIT),"three seeds contribute exactly one level");
+        check(MmoForge.units(receiver,stone).multiply(BigInteger.valueOf(3)).equals(MmoForge.UNIT),"three runestones contribute exactly one level");
+        selection.clear();selection.put(seed,1);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.ZERO),"one seed rounds to zero without saving a remainder");
+        selection.put(seed,2);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.ONE),"two seeds round their combined two thirds to one");
+        selection.put(seed,3);
+        check(MmoForge.total(receiver,selection).equals(MmoForge.UNIT),"three seeds are exact before rounding");
+        selection.clear();selection.put(seed,1);selection.put(stone,2);
+        check(MmoForge.total(receiver,selection).equals(MmoForge.UNIT),"mixed seeds and stones combine into an exact level");
+        selection.put(potion,1);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.TWO),"thirds combine with whole potion credits");
+        selection.clear();selection.put(plate,1);selection.put(stone,1);
+        check(MmoForge.levels(receiver,selection).equals(BigInteger.valueOf(41)),"40.5 equipment plus one third still rounds once to 41");
+        Dagger hugeDonor=new Dagger();hugeDonor.level(20);hugeDonor.mmoExtra=BigInteger.TEN.pow(80);forger.belongings.backpack.items.add(hugeDonor);
+        selection.clear();selection.put(hugeDonor,1);
+        BigInteger expected=MmoForge.levels(receiver,selection).add(receiver.mmoLevel());
+        check(MmoForge.apply(forger,receiver,selection) && receiver.mmoLevel().equals(expected),"huge recovery uses exact large integers without a per-level loop");
+        Dungeon.challenges=0;
+        check(!MmoForge.target(receiver),"normal mode exposes no forging action");
+        setup(args[0]);
+        Dungeon.challenges=Challenges.MMO | Challenges.BIOCHIP;
+        for(int depth:new int[]{1,5,10,15,20,25}) {
+            Dungeon.depth=depth;Rat reference=new Rat();double g=Math.pow(1.5,depth-1);
+            check(Math.abs(MmoRules.health(reference).times(reference.HT).bounded(Double.MAX_VALUE)/(reference.HT*g)-1)<1e-12,"original MMO health formula at floor "+depth);
+            check(Math.abs(MmoRules.attack(reference).times(2).bounded(Double.MAX_VALUE)/(2*g)-1)<1e-12,"original MMO damage formula at floor "+depth);
+            check(MmoRules.mobExperience(10)==(int)(10*g),"original MMO experience formula at floor "+depth);
+            check(MmoRules.mobSkillGrowth()==depth,"original MMO skill multiplier at floor "+depth);
+            reference.mmoHitCredit=0;MmoRules.hit(reference,Dungeon.hero,10,1000);
+            check(Math.abs(reference.mmoHitCredit-depth/200.0)<1e-12,"MMO accuracy actually reaches the hit calculation at floor "+depth);
+            Dungeon.hero.mmoHitCredit=0;MmoRules.hit(Dungeon.hero,reference,100,100);
+            check(Math.abs(Dungeon.hero.mmoHitCredit-(depth==1?.5:1.0/(2*depth)))<1e-12,"MMO evasion actually reaches the hit calculation at floor "+depth);
+            for(double ratio:new double[]{1,1.5,1.99,2,1000000}) {
+                MortalRat mortal=new MortalRat();mortal.sprite=new QuietSprite();
+                int hit=MmoRules.normalized(mortal,MmoRules.health(mortal).times(mortal.HP*ratio));
+                mortal.damageBase(hit,Dungeon.hero);
+                check(mortal.died && mortal.HP==0,"no MMO anti-one-shot protection at floor "+depth+", damage/HP="+ratio);
+            }
+        }
+        Dungeon.challenges=0;Dungeon.depth=25;
+        check(MmoRules.mobGrowth().compareTo(GameNumber.ONE)==0 && MmoRules.mobSkillGrowth()==1 && MmoRules.mobExperience(10)==10,"disabled MMO preserves native monsters and experience");
+        Dungeon.challenges=Challenges.MMO;Dungeon.depth=5;
+        Rat justBelow=new Rat();
+        check(MmoRules.normalized(justBelow,MmoRules.health(justBelow).times(1-1e-8))==0,"real fractional damage is not rounded into an extra point");
+        check(MmoRules.normalized(justBelow,MmoRules.health(justBelow).times(1e-8))==1,"real fractional remainder still accumulates correctly");
         System.out.println("PASS: "+checks+" MMO regression checks");
     }
 }

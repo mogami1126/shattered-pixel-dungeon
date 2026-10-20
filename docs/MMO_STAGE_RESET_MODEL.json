@@ -1,0 +1,332 @@
+[
+  {
+    "region": 1,
+    "mean_enemies": 814.1333333333333,
+    "min_upgrade": 1351.1966761133333,
+    "mean_upgrade": 1853.0019897005714,
+    "max_upgrade": 2496.9975485415875,
+    "budget": 555.9005969101714,
+    "rank": 1,
+    "frozen": {
+      "damage": 1024.0,
+      "dr": 512.0000000000002,
+      "hp": 640.0000000000001
+    },
+    "progress": [
+      {
+        "local": 1,
+        "spent_level": 0.0,
+        "landed_hits": 2,
+        "survival_hits": 18.6046511627907,
+        "margin": 9.30232558139535,
+        "enemy_hp": 1.5,
+        "enemy_damage": 1.2,
+        "net_received": 1.075
+      },
+      {
+        "local": 2,
+        "spent_level": 78.21771222327618,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 3,
+        "enemy_damage": 1.5,
+        "net_received": 0
+      },
+      {
+        "local": 3,
+        "spent_level": 194.66177389906034,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 32,
+        "enemy_damage": 2.3,
+        "net_received": 0
+      },
+      {
+        "local": 4,
+        "spent_level": 354.2346805349333,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 256,
+        "enemy_damage": 8,
+        "net_received": 0
+      },
+      {
+        "local": 5,
+        "spent_level": 554.8125498935048,
+        "landed_hits": 5,
+        "survival_hits": 7.117504521223177,
+        "margin": 1.4235009042446354,
+        "enemy_hp": 4096,
+        "enemy_damage": 600,
+        "net_received": 89.76411272600313
+      }
+    ]
+  },
+  {
+    "region": 2,
+    "mean_enemies": 806.1666666666666,
+    "min_upgrade": 3310.0911915661372,
+    "mean_upgrade": 4449.976520575661,
+    "max_upgrade": 5681.6126415449735,
+    "budget": 1334.9929561726983,
+    "rank": 128,
+    "frozen": {
+      "damage": 131072.0,
+      "dr": 65536.00000000003,
+      "hp": 81920.00000000001
+    },
+    "progress": [
+      {
+        "local": 1,
+        "spent_level": 0.0,
+        "landed_hits": 2,
+        "survival_hits": 18.6046511627907,
+        "margin": 9.30232558139535,
+        "enemy_hp": 192.0,
+        "enemy_damage": 153.6,
+        "net_received": 137.6
+      },
+      {
+        "local": 2,
+        "spent_level": 254.74807483555554,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 384,
+        "enemy_damage": 192.0,
+        "net_received": 0
+      },
+      {
+        "local": 3,
+        "spent_level": 584.1930777726983,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 4096,
+        "enemy_damage": 294.4,
+        "net_received": 0
+      },
+      {
+        "local": 4,
+        "spent_level": 963.0080860615872,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 32768,
+        "enemy_damage": 1024,
+        "net_received": 0
+      },
+      {
+        "local": 5,
+        "spent_level": 1332.8336541917458,
+        "landed_hits": 5,
+        "survival_hits": 7.143998589276214,
+        "margin": 1.428799717855243,
+        "enemy_hp": 524288,
+        "enemy_damage": 76800,
+        "net_received": 11450.628522788276
+      }
+    ]
+  },
+  {
+    "region": 3,
+    "mean_enemies": 997.8,
+    "min_upgrade": 6673.296977777777,
+    "mean_upgrade": 8834.603521481482,
+    "max_upgrade": 11463.788288888889,
+    "budget": 2650.3810564444443,
+    "rank": 16384,
+    "frozen": {
+      "damage": 16777216.0,
+      "dr": 8388608.000000004,
+      "hp": 10485760.000000002
+    },
+    "progress": [
+      {
+        "local": 1,
+        "spent_level": 0.0,
+        "landed_hits": 2,
+        "survival_hits": 18.6046511627907,
+        "margin": 9.30232558139535,
+        "enemy_hp": 24576.0,
+        "enemy_damage": 19660.8,
+        "net_received": 17612.8
+      },
+      {
+        "local": 2,
+        "spent_level": 576.1872797777777,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 49152,
+        "enemy_damage": 24576.0,
+        "net_received": 0
+      },
+      {
+        "local": 3,
+        "spent_level": 1236.534144888889,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 524288,
+        "enemy_damage": 37683.2,
+        "net_received": 0
+      },
+      {
+        "local": 4,
+        "spent_level": 1898.0752815555556,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 4194304,
+        "enemy_damage": 131072,
+        "net_received": 0
+      },
+      {
+        "local": 5,
+        "spent_level": 2646.907919777778,
+        "landed_hits": 5,
+        "survival_hits": 7.168099471292579,
+        "margin": 1.4336198942585159,
+        "enemy_hp": 67108864,
+        "enemy_damage": 9830400,
+        "net_received": 1461148.1677185846
+      }
+    ]
+  },
+  {
+    "region": 4,
+    "mean_enemies": 809.8333333333334,
+    "min_upgrade": 9935.608155555556,
+    "mean_upgrade": 15526.119233703703,
+    "max_upgrade": 22055.636477777778,
+    "budget": 4657.835770111111,
+    "rank": 2097152,
+    "frozen": {
+      "damage": 2147483647.9999995,
+      "dr": 1073741824.0000005,
+      "hp": 1342177280.0000002
+    },
+    "progress": [
+      {
+        "local": 1,
+        "spent_level": 0.0,
+        "landed_hits": 2,
+        "survival_hits": 18.6046511627907,
+        "margin": 9.30232558139535,
+        "enemy_hp": 3145728.0,
+        "enemy_damage": 2516582.4,
+        "net_received": 2254438.4
+      },
+      {
+        "local": 2,
+        "spent_level": 777.9399607777777,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 6291456,
+        "enemy_damage": 3145728.0,
+        "net_received": 0
+      },
+      {
+        "local": 3,
+        "spent_level": 1769.526572333333,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 67108864,
+        "enemy_damage": 4823449.6,
+        "net_received": 0
+      },
+      {
+        "local": 4,
+        "spent_level": 3054.404342333333,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 536870912,
+        "enemy_damage": 16777216,
+        "net_received": 0
+      },
+      {
+        "local": 5,
+        "spent_level": 4648.878733444443,
+        "landed_hits": 5,
+        "survival_hits": 7.120167623677986,
+        "margin": 1.4240335247355973,
+        "enemy_hp": 8589934592,
+        "enemy_damage": 1258291200,
+        "net_received": 188184269.8430332
+      }
+    ]
+  },
+  {
+    "region": 5,
+    "mean_enemies": 1192.2666666666667,
+    "min_upgrade": 49287.465233333336,
+    "mean_upgrade": 59933.23843888889,
+    "max_upgrade": 77716.00283333333,
+    "budget": 17979.971531666666,
+    "rank": 268435456,
+    "frozen": {
+      "damage": 274877906943.99994,
+      "dr": 137438953472.00006,
+      "hp": 171798691840.00003
+    },
+    "progress": [
+      {
+        "local": 1,
+        "spent_level": 0.0,
+        "landed_hits": 2,
+        "survival_hits": 18.6046511627907,
+        "margin": 9.30232558139535,
+        "enemy_hp": 402653184.0,
+        "enemy_damage": 322122547.2,
+        "net_received": 288568115.2
+      },
+      {
+        "local": 2,
+        "spent_level": 3273.157113333333,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 805306368,
+        "enemy_damage": 402653184.0,
+        "net_received": 0
+      },
+      {
+        "local": 3,
+        "spent_level": 7154.9722876666665,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 8589934592,
+        "enemy_damage": 617401548.8,
+        "net_received": 0
+      },
+      {
+        "local": 4,
+        "spent_level": 12004.933447666666,
+        "landed_hits": 1,
+        "survival_hits": Infinity,
+        "margin": Infinity,
+        "enemy_hp": 68719476736,
+        "enemy_damage": 2147483648,
+        "net_received": 0
+      },
+      {
+        "local": 5,
+        "spent_level": 17955.842371666666,
+        "landed_hits": 5,
+        "survival_hits": 7.165613988600998,
+        "margin": 1.4331227977201997,
+        "enemy_hp": 1099511627776,
+        "enemy_damage": 161061273600,
+        "net_received": 23947088399.00746
+      }
+    ]
+  }
+]

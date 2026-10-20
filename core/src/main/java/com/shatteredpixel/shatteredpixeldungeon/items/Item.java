@@ -115,6 +115,8 @@ public class Item implements Bundlable {
 		ArrayList<String> actions = new ArrayList<>();
 		actions.add( AC_DROP );
 		actions.add( AC_THROW );
+		if (com.shatteredpixel.shatteredpixeldungeon.mmo.MmoForge.target(this))
+			actions.add(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoForge.ACTION);
 		return actions;
 	}
 
@@ -163,6 +165,12 @@ public class Item implements Bundlable {
 		GameScene.cancel();
 		curUser = hero;
 		curItem = this;
+		if (action.equals(com.shatteredpixel.shatteredpixeldungeon.mmo.MmoForge.ACTION)
+				&& com.shatteredpixel.shatteredpixeldungeon.mmo.MmoForge.target(this)
+				&& (isEquipped(hero) || hero.belongings.backpack.contains(this))) {
+			GameScene.show(new com.shatteredpixel.shatteredpixeldungeon.windows.WndMmoForge(hero,this));
+			return;
+		}
 		
 		if (action.equals( AC_DROP )) {
 			

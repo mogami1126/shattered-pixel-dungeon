@@ -961,6 +961,8 @@ public abstract class Mob extends Char {
 			}
 		}
 		
+		// MMO changes magnitudes only. Unlike TooCruel v1.0.2, a lethal hit in
+		// [HP, 2*HP) is not divided by (depth+1)*log(depth+1).
 		super.damageBase( dmg, src );
 	}
 	
@@ -990,8 +992,7 @@ public abstract class Mob extends Char {
 				
 				int exp = MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.UNLIMITED_GROWTH) ? EXP : Dungeon.hero.lvl <= maxLvl ? EXP : 0;
 
-                if (exp > 0 && MmoRules.on(com.shatteredpixel.shatteredpixeldungeon.Challenges.MMO))
-                    exp=(int)Math.min(Integer.MAX_VALUE,Math.floor(exp*MmoRules.mobGrowth().bounded(Integer.MAX_VALUE)));
+                exp=MmoRules.mobExperience(exp);
 
 				//during ascent, under-levelled enemies grant 10 xp each until level 30
 				// after this enemy kills which reduce the amulet curse still grant 10 effective xp

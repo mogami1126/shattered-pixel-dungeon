@@ -24,6 +24,8 @@ import java.math.BigInteger;
 /** Optional first-edition rules. Native health remains a stage coordinate, not a magnitude. */
 public final class MmoRules {
     private MmoRules() {}
+    // TooCruel v1.0.2 MMO.SCALING_FACTOR. Do not include Mob's anti-one-shot branch.
+    private static final double ENEMY_GROWTH_BASE = 1.5;
     private static final ThreadLocal<Char> procTarget = new ThreadLocal<>();
     public static boolean on(int flag) { return Dungeon.isChallenged(flag); }
     /** Supply category bags once, including when an existing large-bag save is loaded. */
@@ -52,7 +54,14 @@ public final class MmoRules {
         if (bag != null) bag.collect(Dungeon.hero.belongings.backpack);
     }
     public static GameNumber mobGrowth() {
-        return on(Challenges.MMO) ? GameNumber.power(1.5, BigInteger.valueOf(Math.max(0,Dungeon.depth-1))) : GameNumber.ONE;
+        return on(Challenges.MMO) ? GameNumber.power(ENEMY_GROWTH_BASE, BigInteger.valueOf(Math.max(0,Dungeon.depth-1))) : GameNumber.ONE;
+    }
+    public static int mobSkillGrowth() {
+        return on(Challenges.MMO) ? Math.max(1,Dungeon.depth) : 1;
+    }
+    public static int mobExperience(int base) {
+        if (base <= 0 || !on(Challenges.MMO)) return base;
+        return (int)Math.min(Integer.MAX_VALUE,Math.floor(base*mobGrowth().bounded(Integer.MAX_VALUE)));
     }
     public static boolean scaled() { return on(Challenges.UNLIMITED_GROWTH) || on(Challenges.MMO); }
     public static boolean growing(Item item) {
@@ -159,7 +168,13 @@ public final class MmoRules {
     }
     public static int normalized(Char target, GameNumber actual) {
         GameNumber units=actual.divide(health(target)).plus(target.mmoRemainder);
-        double value=units.bounded(1000000); int whole=(int)Math.floor(value);
+        double value=units.bounded(1000000);
+        // Multiplying and dividing scientific mantissas can produce 7.999999999999999
+        // for exactly 8 HP. Snap only machine-roundoff near a positive integer;
+        // genuinely fractional damage still accumulates without a minimum damage rule.
+        double nearest=Math.rint(value);
+        if(nearest>=1 && Math.abs(value-nearest)<=8*Math.ulp(value)) value=nearest;
+        int whole=(int)Math.floor(value);
         target.mmoRemainder=units.minus(GameNumber.of(whole));
         // Overflowing hits kill normally; never turn a huge packet into a 1-point sentinel.
         if (value >= 1000000) { target.mmoRemainder=GameNumber.ZERO; return 1000000; }
@@ -218,8 +233,8 @@ public final class MmoRules {
         if (attacker instanceof Hero) a=a.times(GameNumber.power(1.3,ringExtra((Hero)attacker,RingOfAccuracy.class)));
         if (defender instanceof Hero) d=d.times(GameNumber.power(1.125,ringExtra((Hero)defender,RingOfEvasion.class)));
         if (on(Challenges.MMO)) {
-            if (attacker instanceof Mob && !(attacker instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC)) a=a.times(Math.max(1,Dungeon.depth));
-            if (defender instanceof Mob && !(defender instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC)) d=d.times(Math.max(1,Dungeon.depth));
+            if (attacker instanceof Mob && !(attacker instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC)) a=a.times(mobSkillGrowth());
+            if (defender instanceof Mob && !(defender instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC)) d=d.times(mobSkillGrowth());
         }
         double p;
         if (a.compareTo(GameNumber.ZERO)==0) p=0;
@@ -241,7 +256,7 @@ public final class MmoRules {
         }
         if (leveled && h.sprite!=null) h.sprite.showStatus(com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite.POSITIVE, "Lv "+heroLevel(h));
     }
-    private static void revealUpgradeAndCurse(Item item) {
+    public static void revealUpgradeAndCurse(Item item) {
         if (item.isUpgradable()) {
             // TooCruel reveals these two facts without learning ring types or wand charges.
             item.levelKnown=true;
@@ -376,16 +391,23 @@ public final class MmoRules {
                 }
                 // Execute utility transitions up to +32, then change only the magnitude.
                 // Avoid thousands of repeated particles, curse messages and quickslot refreshes.
-                int transitions=growing(item) ? Math.min(count,Math.max(0,32-item.mmoLevel().min(BigInteger.valueOf(32)).intValue())) : count;
-                for(int n=0;n<transitions;n++) item.upgrade();
-                int extra=count-transitions;
-                if(extra>0) item.mmoExtra=item.mmoExtra.add(BigInteger.valueOf(extra));
-                if(item instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff) ((com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)item).updateWand(false);
+                addUpgrades(item,BigInteger.valueOf(count));
                 com.shatteredpixel.shatteredpixeldungeon.Statistics.upgradesUsed=(int)Math.min(Integer.MAX_VALUE,(long)com.shatteredpixel.shatteredpixeldungeon.Statistics.upgradesUsed+count);
                 com.shatteredpixel.shatteredpixeldungeon.Badges.validateItemLevelAquired(item);
                 scroll.readAnimation();
                 Item.updateQuickslot();
             }
         });
+    }
+    public static void addUpgrades(Item item, BigInteger count) {
+        if (count.signum() <= 0) return;
+        int transitions = growing(item) ? count.min(BigInteger.valueOf(Math.max(0,
+                32-item.mmoLevel().max(BigInteger.ZERO).min(BigInteger.valueOf(32)).intValue()))).intValue()
+                : count.intValueExact();
+        for (int n=0;n<transitions;n++) item.upgrade();
+        BigInteger extra=count.subtract(BigInteger.valueOf(transitions));
+        if(extra.signum()>0) item.mmoExtra=item.mmoExtra.add(extra);
+        if(item instanceof com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)
+            ((com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff)item).updateWand(false);
     }
 }

@@ -1,0 +1,824 @@
+[
+  {
+    "name": "Rat",
+    "current": {
+      "hp": 8,
+      "evasion": 2,
+      "accuracy": 8,
+      "damage": [
+        1,
+        4
+      ],
+      "armor": [
+        0,
+        1
+      ],
+      "exp": 1,
+      "attack_rate": 1,
+      "name": "Rat"
+    },
+    "old": {
+      "hp": 8,
+      "evasion": 2,
+      "accuracy": 8,
+      "damage": [
+        1,
+        4
+      ],
+      "armor": [
+        0,
+        1
+      ],
+      "exp": 1,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Rat.java",
+    "sha256": "fd62ca05597ec4870933ac987df242fade5345d05001ce651319f5ebe517f04a"
+  },
+  {
+    "name": "Snake",
+    "current": {
+      "hp": 4,
+      "evasion": 25,
+      "accuracy": 10,
+      "damage": [
+        1,
+        4
+      ],
+      "armor": [
+        0,
+        0
+      ],
+      "exp": 2,
+      "attack_rate": 1,
+      "name": "Snake"
+    },
+    "old": {
+      "hp": 4,
+      "evasion": 25,
+      "accuracy": 10,
+      "damage": [
+        1,
+        4
+      ],
+      "armor": [
+        0,
+        0
+      ],
+      "exp": 2,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Snake.java",
+    "sha256": "d1b559260f9c0b85ae15cfc0c472106572fb0ba205c3dcc1c75e10f8bb0807fd"
+  },
+  {
+    "name": "Gnoll",
+    "current": {
+      "hp": 12,
+      "evasion": 4,
+      "accuracy": 10,
+      "damage": [
+        1,
+        6
+      ],
+      "armor": [
+        0,
+        2
+      ],
+      "exp": 2,
+      "attack_rate": 1,
+      "name": "Gnoll"
+    },
+    "old": {
+      "hp": 12,
+      "evasion": 4,
+      "accuracy": 10,
+      "damage": [
+        1,
+        6
+      ],
+      "armor": [
+        0,
+        2
+      ],
+      "exp": 2,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Gnoll.java",
+    "sha256": "f5f0fd191bf4c1595ab40dae5d89f41b81faa6af04ac7d26f232731540033306"
+  },
+  {
+    "name": "Crab",
+    "current": {
+      "hp": 15,
+      "evasion": 5,
+      "accuracy": 12,
+      "damage": [
+        1,
+        7
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 4,
+      "attack_rate": 1,
+      "name": "Crab"
+    },
+    "old": {
+      "hp": 15,
+      "evasion": 5,
+      "accuracy": 12,
+      "damage": [
+        1,
+        7
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 4,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Crab.java",
+    "sha256": "fc4948bdce27dd09c77f6704069be61b1618a25219166efdb6b3ac0fe8e00cfa"
+  },
+  {
+    "name": "Slime",
+    "current": {
+      "hp": 20,
+      "evasion": 5,
+      "accuracy": 12,
+      "damage": [
+        2,
+        5
+      ],
+      "armor": [
+        0,
+        0
+      ],
+      "exp": 4,
+      "attack_rate": 1,
+      "name": "Slime"
+    },
+    "old": {
+      "hp": 20,
+      "evasion": 5,
+      "accuracy": 12,
+      "damage": [
+        2,
+        5
+      ],
+      "armor": [
+        0,
+        0
+      ],
+      "exp": 4,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Slime.java",
+    "sha256": "29622266cc8c24e9227785107a9fd1019075586256164089394a84dd2e6befec"
+  },
+  {
+    "name": "Swarm",
+    "current": {
+      "hp": 50,
+      "evasion": 5,
+      "accuracy": 10,
+      "damage": [
+        1,
+        4
+      ],
+      "armor": [
+        0,
+        0
+      ],
+      "exp": 3,
+      "attack_rate": 1,
+      "name": "Swarm"
+    },
+    "old": {
+      "hp": 50,
+      "evasion": 5,
+      "accuracy": 10,
+      "damage": [
+        1,
+        4
+      ],
+      "armor": [
+        0,
+        0
+      ],
+      "exp": 3,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Swarm.java",
+    "sha256": "0f5417ce91dee591d06f36c0a12038b1605d590987e1321f2a59c2146680fd85"
+  },
+  {
+    "name": "Skeleton",
+    "current": {
+      "hp": 25,
+      "evasion": 9,
+      "accuracy": 12,
+      "damage": [
+        2,
+        10
+      ],
+      "armor": [
+        0,
+        5
+      ],
+      "exp": 5,
+      "attack_rate": 1,
+      "name": "Skeleton"
+    },
+    "old": {
+      "hp": 25,
+      "evasion": 9,
+      "accuracy": 12,
+      "damage": [
+        2,
+        10
+      ],
+      "armor": [
+        0,
+        5
+      ],
+      "exp": 5,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Skeleton.java",
+    "sha256": "aedcdbf8396c10a7d91afd16a9672e0a0ae7c0e9d7687e8e2bf5078baee18338"
+  },
+  {
+    "name": "Thief",
+    "current": {
+      "hp": 20,
+      "evasion": 12,
+      "accuracy": 12,
+      "damage": [
+        1,
+        10
+      ],
+      "armor": [
+        0,
+        3
+      ],
+      "exp": 5,
+      "attack_rate": 2,
+      "name": "Thief"
+    },
+    "old": {
+      "hp": 20,
+      "evasion": 12,
+      "accuracy": 12,
+      "damage": [
+        1,
+        10
+      ],
+      "armor": [
+        0,
+        3
+      ],
+      "exp": 5,
+      "attack_rate": 2
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Thief.java",
+    "sha256": "a65e0ca6bf91ecc394e2839ebace6488d5d244132d31149aaf71a22a48d1ff44"
+  },
+  {
+    "name": "DM100",
+    "current": {
+      "hp": 20,
+      "evasion": 8,
+      "accuracy": 11,
+      "damage": [
+        2,
+        8
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 6,
+      "attack_rate": 1,
+      "name": "DM100"
+    },
+    "old": {
+      "hp": 20,
+      "evasion": 8,
+      "accuracy": 11,
+      "damage": [
+        2,
+        8
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 6,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\DM100.java",
+    "sha256": "f5c8b9d0824e8c6fb3001671e93c3d7c6dd7ac4ca9d29842a8f968ffae6a7bd3"
+  },
+  {
+    "name": "Guard",
+    "current": {
+      "hp": 40,
+      "evasion": 10,
+      "accuracy": 12,
+      "damage": [
+        4,
+        12
+      ],
+      "armor": [
+        0,
+        7
+      ],
+      "exp": 7,
+      "attack_rate": 1,
+      "name": "Guard"
+    },
+    "old": {
+      "hp": 40,
+      "evasion": 10,
+      "accuracy": 12,
+      "damage": [
+        4,
+        12
+      ],
+      "armor": [
+        0,
+        7
+      ],
+      "exp": 7,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Guard.java",
+    "sha256": "f967dad81aa2dcc78a0fba974e90068649656283f871fafd0389160c1fff7c8e"
+  },
+  {
+    "name": "Necromancer",
+    "current": {
+      "hp": 40,
+      "evasion": 14,
+      "accuracy": null,
+      "damage": null,
+      "armor": [
+        0,
+        5
+      ],
+      "exp": 7,
+      "attack_rate": 1,
+      "name": "Necromancer"
+    },
+    "old": {
+      "hp": 40,
+      "evasion": 14,
+      "accuracy": null,
+      "damage": null,
+      "armor": [
+        0,
+        5
+      ],
+      "exp": 7,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Necromancer.java",
+    "sha256": "81ed5ceb7cef50f6c30c99ebb6ae897781c0ef6f3cf9c2b6db3beb3239c0614b"
+  },
+  {
+    "name": "Bat",
+    "current": {
+      "hp": 30,
+      "evasion": 15,
+      "accuracy": 16,
+      "damage": [
+        5,
+        18
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 7,
+      "attack_rate": 1,
+      "name": "Bat"
+    },
+    "old": {
+      "hp": 30,
+      "evasion": 15,
+      "accuracy": 16,
+      "damage": [
+        5,
+        18
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 7,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Bat.java",
+    "sha256": "66dd3216137bff3a2ca4c3f3c9de5a308545763fb10ac4521fe690376579de93"
+  },
+  {
+    "name": "Brute",
+    "current": {
+      "hp": 40,
+      "evasion": 15,
+      "accuracy": 20,
+      "damage": [
+        5,
+        25
+      ],
+      "armor": [
+        0,
+        8
+      ],
+      "exp": 8,
+      "attack_rate": 1,
+      "name": "Brute"
+    },
+    "old": {
+      "hp": 40,
+      "evasion": 15,
+      "accuracy": 20,
+      "damage": [
+        5,
+        25
+      ],
+      "armor": [
+        0,
+        8
+      ],
+      "exp": 8,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Brute.java",
+    "sha256": "d1113257cf4add82e17925de429392c04e75a994d308d76950e8af3c3d5d2678"
+  },
+  {
+    "name": "Shaman",
+    "current": {
+      "hp": 35,
+      "evasion": 15,
+      "accuracy": 18,
+      "damage": [
+        5,
+        10
+      ],
+      "armor": [
+        0,
+        6
+      ],
+      "exp": 8,
+      "attack_rate": 1,
+      "name": "Shaman"
+    },
+    "old": {
+      "hp": 35,
+      "evasion": 15,
+      "accuracy": 18,
+      "damage": [
+        5,
+        10
+      ],
+      "armor": [
+        0,
+        6
+      ],
+      "exp": 8,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Shaman.java",
+    "sha256": "43417eb2eca809cc9eaf72a2152c12d4b458b364b536b472618352667f7481fc"
+  },
+  {
+    "name": "Spinner",
+    "current": {
+      "hp": 50,
+      "evasion": 17,
+      "accuracy": 22,
+      "damage": [
+        10,
+        20
+      ],
+      "armor": [
+        0,
+        6
+      ],
+      "exp": 9,
+      "attack_rate": 1,
+      "name": "Spinner"
+    },
+    "old": {
+      "hp": 50,
+      "evasion": 17,
+      "accuracy": 22,
+      "damage": [
+        10,
+        20
+      ],
+      "armor": [
+        0,
+        6
+      ],
+      "exp": 9,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Spinner.java",
+    "sha256": "098b51aa11ce49e0015050ad058bbb61f2a19c46d4c34e174ecbc45df200e9ef"
+  },
+  {
+    "name": "DM200",
+    "current": {
+      "hp": 80,
+      "evasion": 12,
+      "accuracy": 20,
+      "damage": [
+        10,
+        25
+      ],
+      "armor": [
+        0,
+        8
+      ],
+      "exp": 9,
+      "attack_rate": 1,
+      "name": "DM200"
+    },
+    "old": {
+      "hp": 80,
+      "evasion": 12,
+      "accuracy": 20,
+      "damage": [
+        10,
+        25
+      ],
+      "armor": [
+        0,
+        8
+      ],
+      "exp": 9,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\DM200.java",
+    "sha256": "2639bb89c4ddbfff884ca9e6893c0a35776556ad880065a58ca83718309f2e37"
+  },
+  {
+    "name": "Ghoul",
+    "current": {
+      "hp": 45,
+      "evasion": 20,
+      "accuracy": 24,
+      "damage": [
+        16,
+        22
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 5,
+      "attack_rate": 1,
+      "name": "Ghoul"
+    },
+    "old": {
+      "hp": 45,
+      "evasion": 20,
+      "accuracy": 24,
+      "damage": [
+        16,
+        22
+      ],
+      "armor": [
+        0,
+        4
+      ],
+      "exp": 5,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Ghoul.java",
+    "sha256": "557a7c41af39eae6a4af80880cf17435c449d8065dd7570bea22f56b46fd2e8c"
+  },
+  {
+    "name": "Warlock",
+    "current": {
+      "hp": 70,
+      "evasion": 18,
+      "accuracy": 25,
+      "damage": [
+        12,
+        18
+      ],
+      "armor": [
+        0,
+        8
+      ],
+      "exp": 11,
+      "attack_rate": 1,
+      "name": "Warlock"
+    },
+    "old": {
+      "hp": 70,
+      "evasion": 18,
+      "accuracy": 25,
+      "damage": [
+        12,
+        18
+      ],
+      "armor": [
+        0,
+        8
+      ],
+      "exp": 11,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Warlock.java",
+    "sha256": "bd49797675d4231b4014863d4531456938889cf70911be9b6bb5d5e21ff9ecf1"
+  },
+  {
+    "name": "Monk",
+    "current": {
+      "hp": 70,
+      "evasion": 30,
+      "accuracy": 30,
+      "damage": [
+        12,
+        25
+      ],
+      "armor": [
+        0,
+        2
+      ],
+      "exp": 11,
+      "attack_rate": 2,
+      "name": "Monk"
+    },
+    "old": {
+      "hp": 70,
+      "evasion": 30,
+      "accuracy": 30,
+      "damage": [
+        12,
+        25
+      ],
+      "armor": [
+        0,
+        2
+      ],
+      "exp": 11,
+      "attack_rate": 2
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Monk.java",
+    "sha256": "e8c45e785849df58035aad16c9bb591b8d33245e2152f9247249d8151e3c1dbf"
+  },
+  {
+    "name": "Golem",
+    "current": {
+      "hp": 120,
+      "evasion": 15,
+      "accuracy": 28,
+      "damage": [
+        25,
+        30
+      ],
+      "armor": [
+        0,
+        12
+      ],
+      "exp": 12,
+      "attack_rate": 1,
+      "name": "Golem"
+    },
+    "old": {
+      "hp": 120,
+      "evasion": 15,
+      "accuracy": 28,
+      "damage": [
+        25,
+        30
+      ],
+      "armor": [
+        0,
+        12
+      ],
+      "exp": 12,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Golem.java",
+    "sha256": "42123c0c93b2e5c5fcaaab57232ccdba746f7e425fc85dc0b6f7ffb1c7f06267"
+  },
+  {
+    "name": "Succubus",
+    "current": {
+      "hp": 80,
+      "evasion": 25,
+      "accuracy": 40,
+      "damage": [
+        25,
+        30
+      ],
+      "armor": [
+        0,
+        10
+      ],
+      "exp": 12,
+      "attack_rate": 1,
+      "name": "Succubus"
+    },
+    "old": {
+      "hp": 80,
+      "evasion": 25,
+      "accuracy": 40,
+      "damage": [
+        25,
+        30
+      ],
+      "armor": [
+        0,
+        10
+      ],
+      "exp": 12,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Succubus.java",
+    "sha256": "5719a295973fd56ff5639fb68c35d7a95656237a2cd5f9930283758e11c477e7"
+  },
+  {
+    "name": "Eye",
+    "current": {
+      "hp": 100,
+      "evasion": 20,
+      "accuracy": 30,
+      "damage": [
+        20,
+        30
+      ],
+      "armor": [
+        0,
+        10
+      ],
+      "exp": 13,
+      "attack_rate": 1,
+      "name": "Eye"
+    },
+    "old": {
+      "hp": 100,
+      "evasion": 20,
+      "accuracy": 30,
+      "damage": [
+        20,
+        30
+      ],
+      "armor": [
+        0,
+        10
+      ],
+      "exp": 13,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Eye.java",
+    "sha256": "4120f3b24475f216b66966a8e42e53c52a000a2630c7bbb8267ebd0d0a8ddbd8"
+  },
+  {
+    "name": "Scorpio",
+    "current": {
+      "hp": 110,
+      "evasion": 24,
+      "accuracy": 36,
+      "damage": [
+        30,
+        40
+      ],
+      "armor": [
+        0,
+        16
+      ],
+      "exp": 14,
+      "attack_rate": 1,
+      "name": "Scorpio"
+    },
+    "old": {
+      "hp": 110,
+      "evasion": 24,
+      "accuracy": 36,
+      "damage": [
+        30,
+        40
+      ],
+      "armor": [
+        0,
+        16
+      ],
+      "exp": 14,
+      "attack_rate": 1
+    },
+    "path": "C:\\Users\\MOGAMI\\Documents\\ChatGPT\\英烈的像素地牢\\shattered-mmo\\core\\src\\main\\java\\com\\shatteredpixel\\shatteredpixeldungeon\\actors\\mobs\\Scorpio.java",
+    "sha256": "e24bc63b287c0e288297623964c7e6c022dff76ffe4da32935fde979d66ed953"
+  }
+]
